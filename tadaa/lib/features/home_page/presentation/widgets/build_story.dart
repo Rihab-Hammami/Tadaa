@@ -46,7 +46,7 @@ final User user = users.isNotEmpty ? users[0] : User(name: '', imgUrl: '', stori
           ),
         ),
         width: 110,
-        height: 180,
+        height: 160,
       ),
     );
   }

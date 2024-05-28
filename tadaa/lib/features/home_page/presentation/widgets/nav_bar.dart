@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:tadaa/core/utils/app_colors.dart';
 import 'package:tadaa/features/addPost_page/presentation/pages/addPost.dart';
 import 'package:tadaa/features/home_page/presentation/pages/home_screen.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/button_widget.dart';
+import 'package:tadaa/features/marketPlace_page/presentation/pages/marketPlacePage.dart';
 import 'package:tadaa/features/notification_page/pages/notification.dart';
 import 'package:tadaa/features/profile_page/presentation/pages/profile_screen.dart';
 
@@ -24,7 +26,7 @@ class _NavBarState extends State<NavBar> {
   final _pages=const[
     Home_Screen(),
     notification(),
-    Text('notification'),
+    MarketPlacePage(),
     ProfileScreen(),
   ];
 
@@ -41,12 +43,12 @@ class _NavBarState extends State<NavBar> {
         onTap: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddPost()),
+            MaterialPageRoute(builder: (context) => AddPost(onPost: (String caption, File? imageFile) {  },)),
           );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-       bottomNavigationBar:Container(    
+      bottomNavigationBar:Container(    
         height: 80.0,
         width:double.infinity,
         alignment: Alignment.topCenter,
@@ -66,7 +68,7 @@ class _NavBarState extends State<NavBar> {
           ]
         ),
         child: Padding(
-          padding: EdgeInsets.only(left: 8,right: 8),
+          padding: EdgeInsets.only(left: 20,right: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

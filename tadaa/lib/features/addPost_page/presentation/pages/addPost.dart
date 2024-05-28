@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:tadaa/core/utils/app_colors.dart';
+import 'package:tadaa/features/addPost_page/presentation/widgets/appreciationPage.dart';
+import 'package:tadaa/features/addPost_page/presentation/widgets/c%C3%A9l%C3%A9brationPage.dart';
 import 'package:tadaa/features/addPost_page/presentation/widgets/publicationPage.dart';
 
 class AddPost extends StatefulWidget {
-  const AddPost({Key? key}) : super(key: key);
+  final Function(String caption, File? imageFile) onPost;
+  const AddPost({Key? key, required this.onPost}) : super(key: key);
 
   @override
   State<AddPost> createState() => _AddPostState();
@@ -32,9 +37,11 @@ class _AddPostState extends State<AddPost> {
             Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  'Post',
-                  style: TextStyle(fontSize: 18, color: AppColors.bleu,),
+                child: GestureDetector(
+                  child: Text(
+                    'Post',
+                    style: TextStyle(fontSize: 18, color: AppColors.bleu,fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             )
@@ -45,6 +52,7 @@ class _AddPostState extends State<AddPost> {
               _buildTab('Célébration', Icons.celebration, 1),
               _buildTab('Appreciation', Icons.favorite, 2),
             ],
+            //indicatorPadding: EdgeInsets.symmetric(horizontal: 10.0),
             indicatorColor: Color(0xff28BAE8),
             onTap: (index) {
               setState(() {
@@ -55,9 +63,9 @@ class _AddPostState extends State<AddPost> {
         ),
         body: TabBarView(
           children: [
-            PublicationPage(),
-            Center(child: Text('Tab2')),
-            Center(child: Text('Tab3')),
+            PublicationPage(onPost: widget.onPost),
+            CelebrtionPage(),
+            AppreciationPage(),
           ],
         ),
       ),
@@ -72,15 +80,16 @@ class _AddPostState extends State<AddPost> {
         children: [
           Icon(
             iconData,
-            color: isSelected ? AppColors.bleu : Colors.grey,
+            color: isSelected ? AppColors.bleu : Colors.black,
           ),
-          SizedBox(height: 2,),
+          SizedBox(width: 2,),
           Text(
             text,
             style: TextStyle(
-              color: isSelected ? AppColors.bleu : Colors.grey,
+              color: isSelected ? AppColors.bleu : Colors.black,
             ),
           ),
+          
         ],
       ),
     );

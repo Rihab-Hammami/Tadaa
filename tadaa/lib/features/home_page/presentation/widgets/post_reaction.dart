@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:reaction_askany/models/reaction_box_paramenters.dart';
+import 'package:reaction_askany/widgets/reaction_wrapper.dart';
+import 'package:tadaa/features/home_page/presentation/widgets/comment_widget.dart';
 
 class PostReactions extends StatefulWidget {
   const PostReactions({super.key});
@@ -12,6 +15,7 @@ enum Reaction{like,laugh,love,none}
 class _PostReactionsState extends State<PostReactions> {
   Reaction _reaction = Reaction.none;
   bool _reactionView = false;
+  final TextEditingController _commentController = TextEditingController();
   final List<ReactionElement> reactions = [
     ReactionElement(Reaction.like, Icons.thumb_up, Colors.blue),
     ReactionElement(Reaction.love, Icons.favorite, Colors.red),
@@ -23,6 +27,7 @@ class _PostReactionsState extends State<PostReactions> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+            
         if (_reactionView) 
         _buildReactionButtons(),
         _buildReactionBar(),
@@ -30,7 +35,7 @@ class _PostReactionsState extends State<PostReactions> {
     );
   }
 
-  Widget _buildReactionButtons() {
+ Widget _buildReactionButtons() {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
@@ -99,24 +104,23 @@ class _PostReactionsState extends State<PostReactions> {
           ),
         ),
       ),
-      SizedBox(width: 16), // Add spacing between the buttons
+      SizedBox(width: 16), 
       Expanded(
         child: InkWell(
           onTap: () {
-            // Handle comment button tap
-            // You can implement your logic here
+            showCommentBottomSheet(context);
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 Icons.comment,
-                size: 25, // Add the icon for comment button
-                color: Colors.black, // Set the color for comment button icon
+                size: 25, 
+                color: Colors.black, 
               ),
               SizedBox(width: 4),
               Text(
-                'Comment', // Text for the comment button
+                'Comment', 
                 style: TextStyle(fontSize: 16),
               ),
             ],
@@ -126,9 +130,45 @@ class _PostReactionsState extends State<PostReactions> {
     ],
   );
 }
-
-
 }
+ void showCommentBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 1,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back_ios),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    Text(
+                      'Comments',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(width: 35), // Adjust as needed
+                  ],
+                ),
+              ),
+              Expanded(
+                child: commentBox(context),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 Icon getReactionIcon(Reaction r) {
     switch(r){
       case Reaction.like:
@@ -162,3 +202,4 @@ class ReactionElement {
 
   ReactionElement(this.reaction, this.iconData, this.color);
 }
+ 

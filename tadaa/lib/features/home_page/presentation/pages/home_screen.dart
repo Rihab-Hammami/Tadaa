@@ -1,3 +1,6 @@
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tadaa/Data/posts.dart';
@@ -14,14 +17,24 @@ import 'package:tadaa/models/user.dart';
 class Home_Screen extends StatefulWidget {
   const Home_Screen({super.key});
 
+  
+
   @override
   State<Home_Screen> createState() => _Home_ScreenState();
 }
 
 class _Home_ScreenState extends State<Home_Screen> {
+  List<Map<String, dynamic>> posts = [];
+
+  void _handleNewPost(String caption, File? imageFile) {
+    setState(() {
+      posts.add({'caption': caption, 'image': imageFile});
+    });
+  }
   
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 241, 242, 243),
       appBar: PreferredSize(
@@ -62,7 +75,7 @@ class _Home_ScreenState extends State<Home_Screen> {
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                 decoration: BoxDecoration(
-                  color: Color(0xFF0F1245), // Example color, customize as needed
+                  color: Color(0xFF0F1245), 
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -70,14 +83,14 @@ class _Home_ScreenState extends State<Home_Screen> {
                   children: [
                     Icon(
                       Icons.celebration,
-                      size: 25, // Icon of coins
-                      color: Colors.white, // Example color, customize as needed
+                      size: 25, 
+                      color: Colors.white, 
                     ),
-                    SizedBox(width: 4), // Adjust spacing between icon and points
+                    SizedBox(width: 4), 
                     Text(
-                      '100', // Example points, replace with actual points
+                      '100',
                       style: TextStyle(
-                        color: Colors.white, // Example color, customize as needed
+                        color: Colors.white, 
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -112,19 +125,45 @@ class _Home_ScreenState extends State<Home_Screen> {
                 SizedBox(height: 8,),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: Padding(
+                 child:
+                   Padding(
                     padding: const EdgeInsets.only(left:5.0),
-                    child: Row(
+                    child:
+                     Row(
                       children: [
                         _buildAddContainer(),
-                        SizedBox(width: 7,),
-                        buildStory(imagePath: "assets/images/momentStory.png",storyType: 'moment',),
-                        SizedBox(width: 7,),
-                        buildStory(imagePath: "assets/images/tipsStory.png",storyType: 'tips',),
-                        SizedBox(width: 7,),
-                        buildStory(imagePath: "assets/images/dailyStory.png",storyType: 'daily',),
+                        SizedBox(width: 7),
+                        buildStory(imagePath: "assets/images/momentStory.png", storyType: 'moment'),
+                        SizedBox(width: 7),
+                        buildStory(imagePath: "assets/images/tipsStory.png", storyType: 'tips'),
+                        SizedBox(width: 7),
+                        buildStory(imagePath: "assets/images/dailyStory.png", storyType: 'daily'),
                       ],
-                    ),
+                  ),
+                    //without addContainer//
+                   /* Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 5),
+                            child: buildStory(imagePath: "assets/images/momentStory.png", storyType: 'moment'),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 5),
+                            child: buildStory(imagePath: "assets/images/tipsStory.png", storyType: 'tips'),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 5),
+                            child: buildStory(imagePath: "assets/images/dailyStory.png", storyType: 'daily'),
+                          ),
+                        ),
+                      ],
+                     ),*/
+
                   ),
                 ),
                 SizedBox(height: 10,),
@@ -155,15 +194,14 @@ class _Home_ScreenState extends State<Home_Screen> {
       ),
     );
   }
-}
-
+  
 Widget _buildAddContainer() {
   return Stack(
   children: [
     // Background container
     Container(
       width: 110,
-      height: 180,
+      height: 160,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(13),
         color: Colors.transparent,
@@ -175,7 +213,7 @@ Widget _buildAddContainer() {
   top: 0,
   left: 0,
   right: 0,
-  height: 170 * 0.7, // 60% of the height of the outer container
+  height: 140 * 0.7, // 60% of the height of the outer container
   child: Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.only(
@@ -200,10 +238,6 @@ Widget _buildAddContainer() {
   ),
 ),
 
-
-
-
-    // Rounded IconButton at the center bottom
  Positioned(
   bottom: 43,
   left: 0,
@@ -249,10 +283,7 @@ Widget _buildAddContainer() {
     ),
   ],
 );
-
-
-  
- 
 }
 
+}
 

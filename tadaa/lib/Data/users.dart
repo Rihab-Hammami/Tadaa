@@ -23,7 +23,7 @@ final users= [
     
   ),
   User(
-    name: 'Rihab hammami',
+    name: 'Maleek hamza',
     imgUrl: 'assets/images/profile3.png',
     stories: stories,
     posts: posts2,

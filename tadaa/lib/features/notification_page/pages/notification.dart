@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tadaa/Data/users.dart';
+import 'package:tadaa/core/utils/app_colors.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/build_userpost.dart';
 import 'package:tadaa/features/notification_page/widgets/notificationWidget.dart';
 import 'package:tadaa/features/notification_page/widgets/searchWidget.dart';
+import 'package:tadaa/features/story_page/presentation/widgets/storyReactions.dart';
 
 class notification extends StatelessWidget {
   const notification({super.key});
@@ -35,6 +37,8 @@ class notification extends StatelessWidget {
                 icon: Icon(Icons.search))
             ],
             bottom: TabBar(
+          indicatorColor: AppColors.bleu,
+          labelColor: AppColors.bleu,
             tabs: [
               Tab(
                 text: 'Notifications', 
@@ -45,6 +49,7 @@ class notification extends StatelessWidget {
             ],
           ),
             ),
+            
             body: TabBarView(
           children: [
             NotificationWidget(),

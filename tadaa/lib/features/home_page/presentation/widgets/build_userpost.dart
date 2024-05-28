@@ -123,6 +123,7 @@ class BuildUserPost extends StatelessWidget {
                                 ),
                                 const Divider(),
                                   PostReactions(),
+                                  //EmogisWidget(),
                                 ]
                                 
                                 ),
