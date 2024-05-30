@@ -8,8 +8,10 @@ import 'package:tadaa/features/addPost_page/presentation/widgets/bottomSheet.dar
 import 'package:tadaa/features/onBording_Screens/widgets/button.dart';
 
 class PublicationPage extends StatefulWidget {
-   final Function(String caption, File? imageFile) onPost;
-  const PublicationPage({super.key, required this.onPost});
+  final Function(String caption, File? imageFile) onPost;
+  final TextEditingController captionController;
+  final Function(File? file) setImageFile;
+  const PublicationPage({super.key, required this.onPost, required this.captionController, required this.setImageFile});
 
   @override
   State<PublicationPage> createState() => _PublicationPageState();
@@ -17,6 +19,7 @@ class PublicationPage extends StatefulWidget {
 
 class _PublicationPageState extends State<PublicationPage> {
   File? imageFile;
+   
 
   @override
   void initState() {
@@ -154,11 +157,10 @@ class _PublicationPageState extends State<PublicationPage> {
                     ],
                   ),
                 ),
-        ]
+           ]
 
-      )
-        ),
-        
+         )
+        ),     
     );
   }
  

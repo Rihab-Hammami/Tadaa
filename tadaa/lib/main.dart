@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tadaa/Providers/cartProvider.dart';
 import 'package:tadaa/features/onBording_Screens/presentation/onBording_screen.dart';
 import 'package:tadaa/features/splash_screen/presentation/pages/splash_screen.dart';
 
 void main(){
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => CartProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

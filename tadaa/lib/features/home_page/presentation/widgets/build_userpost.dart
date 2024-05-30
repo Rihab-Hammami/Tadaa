@@ -43,8 +43,7 @@ class BuildUserPost extends StatelessWidget {
                                           SizedBox(width: 3,),
                                         Icon(Icons.public,color: Colors.grey[600],
                                         size: 12.0,
-                                        ),
-                                        
+                                        )                                     
                                       ],
                                     )
                                   ],
@@ -55,7 +54,7 @@ class BuildUserPost extends StatelessWidget {
                                 icon: Icon(Icons.more_vert),
                                 )
                             ],
-                                                  ),
+                         ),
                                  SizedBox(height: 5,),
                                  Padding(
                                   padding: EdgeInsets.only(left: 7),
@@ -77,7 +76,7 @@ class BuildUserPost extends StatelessWidget {
                                           }).toList(),
                                         ),
                                     ],
-                                                               ),
+                                   ),
                                  ),
                                   SizedBox(height: 5),
                                   Padding(

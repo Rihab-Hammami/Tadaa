@@ -123,7 +123,7 @@ with SingleTickerProviderStateMixin {
             SizedBox(height: 90),
             Container(
               height: MediaQuery.of(context).size.height,
-              width: 320,
+              width: 340,
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -188,7 +188,7 @@ with SingleTickerProviderStateMixin {
 
   Widget buildProfileContainer() {
     return Container(
-      width: 320,
+      width: 340,
       height: 150,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),

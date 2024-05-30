@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tadaa/Data/products.dart';
 import 'package:tadaa/core/utils/app_colors.dart';
 import 'package:tadaa/features/addPost_page/presentation/widgets/c%C3%A9l%C3%A9brationPage.dart';
+import 'package:tadaa/features/marketPlace_page/presentation/pages/cartDetailsPage.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/pages/detailsPage.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/widgets/buildCoverImage.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/widgets/productCardWidget.dart';
@@ -25,7 +26,10 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
           IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
-              // Add your shopping cart functionality here
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context)=> CartDetailsPage())
+                );             
             },
           ),
           // Search bar

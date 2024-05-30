@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:tadaa/core/utils/app_colors.dart';
 import 'package:tadaa/features/addPost_page/presentation/widgets/appreciationPage.dart';
@@ -17,11 +16,20 @@ class AddPost extends StatefulWidget {
 class _AddPostState extends State<AddPost> {
   int _selectedIndex = 0;
   bool isCaptionTapped = false;
+  final captionController = TextEditingController();
+  File? imageFile;
+  
    void _handleCaptionTapped(bool tapped) {
     setState(() {
       isCaptionTapped = tapped;
     });
   }
+
+  void _post() {
+    widget.onPost(captionController.text, imageFile);
+    Navigator.pop(context); 
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -38,6 +46,7 @@ class _AddPostState extends State<AddPost> {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: GestureDetector(
+                  onTap: _post,
                   child: Text(
                     'Post',
                     style: TextStyle(fontSize: 18, color: AppColors.bleu,fontWeight: FontWeight.bold),
@@ -57,13 +66,23 @@ class _AddPostState extends State<AddPost> {
             onTap: (index) {
               setState(() {
                 _selectedIndex = index;
-              });
+              }
+              );
             },
           ),
         ),
         body: TabBarView(
           children: [
-            PublicationPage(onPost: widget.onPost),
+             PublicationPage(
+              onPost: widget.onPost,
+              captionController: captionController,
+              setImageFile: (file) {
+              setState(() {
+                imageFile = file;
+              }
+              );
+            },
+            ),
             CelebrtionPage(),
             AppreciationPage(),
           ],
