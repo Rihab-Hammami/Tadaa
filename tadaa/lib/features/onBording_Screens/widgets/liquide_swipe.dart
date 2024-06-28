@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tadaa/core/utils/app_colors.dart';
+import 'package:tadaa/features/sign_up_screen/presentation/pages/sign_up_page.dart';
 import 'package:tadaa/features/sign_up_screen/presentation/pages/sign_up_screen.dart';
 
 class LiquidSwipeWidget extends StatefulWidget {

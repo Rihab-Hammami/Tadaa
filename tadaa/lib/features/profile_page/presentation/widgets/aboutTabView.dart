@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:tadaa/core/utils/app_colors.dart';
-import 'package:tadaa/features/home_page/presentation/pages/home_screen.dart';
-import 'package:tadaa/features/logout/logout.dart';
-import 'package:tadaa/features/profile_page/presentation/widgets/datePickerWidget.dart';
+import 'package:tadaa/core/utils/session_manager.dart';
+import 'package:tadaa/features/logout/Presentation/widgets/logoutAlertDialog.dart';
+import 'package:tadaa/features/logout/Presentation/widgets/logout_widget.dart';
+import 'package:tadaa/features/logout/data/logout_service.dart';
+import 'package:tadaa/features/sign_in_screen/presentation/pages/sign_in_screen.dart';
 import 'package:tadaa/features/profile_page/presentation/widgets/infoWidget.dart';
-import 'package:http/http.dart' as http;
-import 'package:tadaa/features/sign_in_screen/presentation/sign_in_screen.dart';
-class AboutWidget extends StatefulWidget {
-  const AboutWidget({Key? key}) : super(key: key);
 
+class AboutWidget extends StatefulWidget {
   @override
   State<AboutWidget> createState() => _AboutWidgetState();
 }
@@ -16,6 +14,58 @@ class AboutWidget extends StatefulWidget {
 class _AboutWidgetState extends State<AboutWidget> {
   String infoText = 'Initial Info'; // Initial value of the text
   DateTime? selectedDate;
+  String? realm;
+  String? refreshToken; // Use refreshToken instead of accessToken
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSessionData();
+  }
+
+  Future<void> _loadSessionData() async {
+    final sessionManager = SessionManager();
+    final fetchedRealm = await sessionManager.getRealm();
+    final fetchedRefreshToken = await sessionManager.getRefreshToken(); // Fetch refreshToken
+
+    setState(() {
+      realm = fetchedRealm;
+      refreshToken = fetchedRefreshToken;
+    });
+  }
+
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, 
+      builder: (BuildContext context) {
+        return LogoutConfirmationDialog(
+          onConfirm: () async {
+            if (realm != null && refreshToken != null) {
+              await logout(context, realm!, refreshToken!); 
+            }
+          },
+        );
+      },
+    );
+  }
+
+  /*Future<void> _logout(BuildContext context) async {
+    final logoutService = LogoutService();
+    final success = await logoutService.logout(realm!, refreshToken!);
+
+    if (success) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => SignInScreen(realm: realm!)),
+        (route) => false,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Logout failed. Please try again.')),
+      );
+    }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -107,10 +157,13 @@ class _AboutWidgetState extends State<AboutWidget> {
               ),
               child: ListTile(
                 title: const Text("Logout"),
-                subtitle: Text("tap to logout"), // Display default text
+                subtitle: Text("Tap to logout"), // Display default text
                 leading: Icon(Icons.logout),
-                onTap: (){},
-                
+                onTap: () {
+                  if (realm != null && refreshToken != null) {
+                    _showLogoutConfirmationDialog(context);
+                  }
+                },
               ),
             ),
           ],
@@ -119,7 +172,7 @@ class _AboutWidgetState extends State<AboutWidget> {
     );
   }
 
-  // Function to show the date picker
+  
   Future<void> _showDatePicker(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -133,7 +186,4 @@ class _AboutWidgetState extends State<AboutWidget> {
       });
     }
   }
-   
-
-  
 }
