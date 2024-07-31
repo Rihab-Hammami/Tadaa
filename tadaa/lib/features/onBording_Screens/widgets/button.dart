@@ -9,7 +9,7 @@ minimumSize: Size(310,50),
 backgroundColor: AppColors.bleu,
 elevation:0,
 shape: const RoundedRectangleBorder(
-  borderRadius: BorderRadius.all(Radius.circular(50),
+  borderRadius: BorderRadius.all(Radius.circular(20),
   ),
 )
 );

@@ -28,8 +28,6 @@ final posts = [
     likes:100,
     comments: 60,
   ),
-
-  
 ];
 final posts2=[
   Post(

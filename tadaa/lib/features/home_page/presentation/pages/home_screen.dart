@@ -30,9 +30,10 @@ class _Home_ScreenState extends State<Home_Screen> {
   setState(() {
     posts.add({'caption': caption, 'imageFile': imageFile});
     print('Post added: $caption, ${imageFile?.path}');
-  }
+   }
   );
 }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

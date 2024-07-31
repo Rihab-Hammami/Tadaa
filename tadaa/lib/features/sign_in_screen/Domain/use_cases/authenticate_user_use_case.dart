@@ -13,5 +13,5 @@ class AuthenticateUserUseCase {
     } catch (e) {
       rethrow; 
     }
-  }
+  } 
 }

@@ -111,7 +111,7 @@ class _AppreciationPageState extends State<AppreciationPage> {
                           children: [
                             Icon(Icons.star, color: Colors.yellow),
                             SizedBox(width: 10),
-                            Text("1 Point"),
+                            Text("10 Point"),
                           ],
                         ),
                       ),
@@ -121,7 +121,7 @@ class _AppreciationPageState extends State<AppreciationPage> {
                           children: [
                             Icon(Icons.star, color: Colors.yellow),
                             SizedBox(width: 10),
-                            Text("2 Points"),
+                            Text("20 Points"),
                           ],
                         ),
                       ),
@@ -131,7 +131,7 @@ class _AppreciationPageState extends State<AppreciationPage> {
                           children: [
                             Icon(Icons.star, color: Colors.yellow),
                             SizedBox(width: 10),
-                            Text("3 Points"),
+                            Text("30 Points"),
                           ],
                         ),
                       ),

@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:tadaa/core/utils/app_colors.dart';
-import 'package:tadaa/features/addPost_page/presentation/widgets/appreciationPage.dart';
-import 'package:tadaa/features/addPost_page/presentation/widgets/c%C3%A9l%C3%A9brationPage.dart';
-import 'package:tadaa/features/addPost_page/presentation/widgets/publicationPage.dart';
+import 'package:tadaa/features/addPost_page/presentation/pages/appreciationPage.dart';
+import 'package:tadaa/features/addPost_page/presentation/pages/c%C3%A9l%C3%A9brationPage.dart';
+import 'package:tadaa/features/addPost_page/presentation/pages/publicationPage.dart';
 
 class AddPost extends StatefulWidget {
   final Function(String caption, File? imageFile) onPost;
@@ -113,4 +113,5 @@ class _AddPostState extends State<AddPost> {
       ),
     );
   }
+  
 }

@@ -8,4 +8,5 @@ class LogoutRepository {
   Future<bool> logout(String realm, String refreshToken) async {
     return await _logoutService.logout(realm, refreshToken);
   }
+  
 }

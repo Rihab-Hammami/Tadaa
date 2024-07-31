@@ -54,4 +54,5 @@ class SignUpBloc extends Cubit<SignUpState> {
       emit(SignUpVerified(realm));
     }
   }
+  
 }
