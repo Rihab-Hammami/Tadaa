@@ -1,5 +1,3 @@
-// lib/features/sign_in_screen/data/repositories/authentication_repository.dart
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 

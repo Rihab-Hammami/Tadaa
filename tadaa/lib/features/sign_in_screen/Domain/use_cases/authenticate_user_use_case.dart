@@ -6,7 +6,7 @@ class AuthenticateUserUseCase {
 
   AuthenticateUserUseCase(this._repository);
 
-  Future<Map<String, dynamic>> execute(String realm, String username, String password) async {
+  Future<Map<String, dynamic>> execute(String realm, String username, String password,) async {
     try {
       final response = await _repository.signIn(realm, username, password);
       return response;

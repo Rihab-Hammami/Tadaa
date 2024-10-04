@@ -20,6 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
+    _realmController.text='neocortex';
     context.read<SignUpBloc>().checkIfSignedUp();
   }
 

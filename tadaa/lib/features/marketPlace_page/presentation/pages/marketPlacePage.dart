@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tadaa/Data/products.dart';
-import 'package:tadaa/core/utils/app_colors.dart';
-import 'package:tadaa/features/addPost_page/presentation/pages/c%C3%A9l%C3%A9brationPage.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/pages/cartDetailsPage.dart';
-import 'package:tadaa/features/marketPlace_page/presentation/pages/detailsPage.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/widgets/buildCoverImage.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/widgets/productCardWidget.dart';
-import 'package:tadaa/models/product.dart';
+
 
 class MarketPlacePage extends StatefulWidget {
   const MarketPlacePage({Key? key,}) : super(key: key);
@@ -52,8 +48,7 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
             ],
           ),
         ),
-      ),
-       
+      ),  
     );
   }
 }

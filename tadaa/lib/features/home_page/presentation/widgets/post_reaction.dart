@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:reaction_askany/models/reaction_box_paramenters.dart';
 import 'package:reaction_askany/widgets/reaction_wrapper.dart';
-import 'package:tadaa/features/home_page/presentation/widgets/comment_widget.dart';
 
 class PostReactions extends StatefulWidget {
   const PostReactions({super.key});
@@ -160,7 +159,7 @@ class _PostReactionsState extends State<PostReactions> {
                 ),
               ),
               Expanded(
-                child: commentBox(context),
+                child: Text("fff"),//ommentBox(context),
               ),
             ],
           ),

@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:tadaa/core/utils/app_colors.dart';
+import 'package:tadaa/features/addPost_page/presentation/pages/SimplePost.dart';
 import 'package:tadaa/features/addPost_page/presentation/pages/appreciationPage.dart';
-import 'package:tadaa/features/addPost_page/presentation/pages/c%C3%A9l%C3%A9brationPage.dart';
+import 'package:tadaa/features/addPost_page/presentation/pages/celebrationPage.dart';
 import 'package:tadaa/features/addPost_page/presentation/pages/publicationPage.dart';
 
 class AddPost extends StatefulWidget {
@@ -25,11 +26,7 @@ class _AddPostState extends State<AddPost> {
     });
   }
 
-  void _post() {
-    widget.onPost(captionController.text, imageFile);
-    Navigator.pop(context); 
-  }
-
+ 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -41,20 +38,7 @@ class _AddPostState extends State<AddPost> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           centerTitle: false,
-          actions: [
-            Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: GestureDetector(
-                  onTap: _post,
-                  child: Text(
-                    'Post',
-                    style: TextStyle(fontSize: 18, color: AppColors.bleu,fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            )
-          ],
+         
           bottom: TabBar(
             tabs: [
               _buildTab('Publication', Icons.publish, 0),
@@ -73,16 +57,7 @@ class _AddPostState extends State<AddPost> {
         ),
         body: TabBarView(
           children: [
-             PublicationPage(
-              onPost: widget.onPost,
-              captionController: captionController,
-              setImageFile: (file) {
-              setState(() {
-                imageFile = file;
-              }
-              );
-            },
-            ),
+            PublicationPage(),
             CelebrtionPage(),
             AppreciationPage(),
           ],

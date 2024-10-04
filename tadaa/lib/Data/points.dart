@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:tadaa/models/points.dart';
 
 
-List<Point> pointsData = [
-  Point(id: 1, userId: 1, points: 2000),
-  Point(id: 2, userId: 2, points: 1500),
-  Point(id: 3, userId: 3, points: 3000),
- 
+final List<Map<String, dynamic>> pointsList = [
+  {'value': 10, 'label': "10 Points"},
+  {'value': 20, 'label': "20 Points"},
+  {'value': 30, 'label': "30 Points"},
+  {'value': 40, 'label': "40 Points"},
+  {'value': 50, 'label': "50 Points"},
+  {'value': 60, 'label': "60 Points"},
+  {'value': 70, 'label': "70 Points"},
 ];

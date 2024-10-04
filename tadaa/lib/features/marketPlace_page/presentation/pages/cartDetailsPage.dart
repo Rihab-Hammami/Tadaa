@@ -1,130 +1,220 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
-import 'package:tadaa/Providers/cartProvider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tadaa/features/marketPlace_page/presentation/blocs/cart_bloc.dart';
+import 'package:tadaa/features/marketPlace_page/presentation/blocs/cart_event.dart';
+import 'package:tadaa/features/marketPlace_page/presentation/blocs/cart_state.dart';
+import 'package:awesome_dialog/awesome_dialog.dart'; // Import AwesomeDialog
 
 class CartDetailsPage extends StatelessWidget {
-  double userPoints = 1000;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cart Details', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Cart Details', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
-      body: Consumer<CartProvider>(
-        builder: (context, cartProvider, child) {
-          return Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  itemCount: cartProvider.cartItems.length,
-                  itemBuilder: (context, index) {
-                    final product = cartProvider.cartItems[index];
-                    return ListTile(
-                      leading: Image.network(product.image),
-                      title: Text(product.title),
-                      subtitle: Text('\$${product.price.toStringAsFixed(2)}'), // Convert double to string
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.remove),
-                            onPressed: () {
-                              cartProvider.decrementProductQuantity(product);
-                            },
+      body: BlocConsumer<CartBloc, CartState>(
+        listener: (context, state) {
+          // Check the state and show a toast message or dialog based on the outcome of the purchase
+          if (state is PurchaseSuccess) {
+           AwesomeDialog(
+            context: context,
+            dialogType: DialogType.success,
+            animType: AnimType.scale,
+            title: 'Purchase Successful',
+            desc: state.message,
+            btnOkOnPress: () {},
+            customHeader: Icon(Icons.check_circle, color: Colors.green, size: 48), // Custom icon
+          ).show();
+          } else if (state is PurchaseFailure) {
+          AwesomeDialog(
+    context: context,
+    dialogType: DialogType.error,
+    animType: AnimType.scale,
+    title: 'Purchase Failed',
+    desc: state.message, // Use the error message from the state
+    btnOkOnPress: () {
+      Navigator.pop(context);
+    },
+    btnOkColor: Colors.red, // Set the button color to red
+    headerAnimationLoop: false,
+    showCloseIcon: true, // Show close icon
+    closeIcon: const Icon(Icons.close),
+    customHeader: Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          Icon(
+            Icons.error_outline, // Custom error icon
+            color: Colors.red,
+            size: 40, // Customize the icon size
+          ),
+          const SizedBox(height: 10), // Space between the icon and the title
+        ],
+      ),
+    ),
+  ).show();
+          }
+        },
+        builder: (context, state) {
+          if (state is CartInitial) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is CartLoaded) {
+            return Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: state.cartItems.length,
+                      itemBuilder: (context, index) {
+                        final product = state.cartItems[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          Text('${cartProvider.getProductQuantity(product)}'),
-                          IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () {
-                              cartProvider.incrementProductQuantity(product);
-                            },
+                          child: ListTile(
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                product.image,
+                                height: 50,
+                                width: 50,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            title: Text(
+                              product.title,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Row(
+                              children: [
+                                Image.asset(
+                                  "assets/icons/coins.png",
+                                  height: 20,
+                                  width: 20,
+                                ),
+                                Text(
+                                  '${product.points}',
+                                  style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.remove),
+                                  onPressed: () {
+                                    context.read<CartBloc>().add(DecrementProductQuantity(product));
+                                  },
+                                ),
+                                Text('${state.productQuantities[product]}'),
+                                IconButton(
+                                  icon: const Icon(Icons.add),
+                                  onPressed: () {
+                                    context.read<CartBloc>().add(IncrementProductQuantity(product));
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10), // Add some space before the bottom sheet
+                  _buildBottomSheet(context, state),
+                ],
               ),
-            ],
-          );
+            );
+          }
+          return const Center(child: Text('No items in the cart.'));
         },
       ),
-      bottomSheet: Container(
-        padding: const EdgeInsets.all(16.0),
-        width: double.infinity,
-        height: MediaQuery.of(context).size.height / 10,
-        decoration: const BoxDecoration(
-          color: Color(0xffe8eaed),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
+    );
+  }
+
+  Widget _buildBottomSheet(BuildContext context, CartLoaded state) {
+    int totalAmount = state.cartItems.fold(
+      0,
+      (total, product) => total + product.points * (state.productQuantities[product] ?? 1),
+    );
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            spreadRadius: 5,
           ),
+        ],
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(18),
+          topRight: Radius.circular(18),
         ),
-        child: Consumer<CartProvider>(
-          builder: (context, cartProvider, child) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [              
-                Text(
-                  '\$${cartProvider.getTotalAmount().toStringAsFixed(2)}', 
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                 ElevatedButton.icon(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF0F1245)),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    side: const BorderSide(color: Colors.white),
-                  ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Display total amount of points
+          Row(
+            children: [
+              Image.asset(
+                "assets/icons/coins.png",
+                height: 30,
+                width: 30,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '$totalAmount', // Show total points
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
                 ),
               ),
-              onPressed: () {  
-                 double totalAmount = cartProvider.getTotalAmount(); 
-                        if (userPoints >= totalAmount) {
-                  // Allow purchase
-                  Fluttertoast.showToast(
-                    msg: "Purchase successful!",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.green,
-                    textColor: Colors.white,
-                    fontSize: 16.0,
-                  );
-                  // Proceed with purchase logic here
-                } else {
-                  // Disallow purchase
-                  Fluttertoast.showToast(
-                    msg: "Insufficient points to buy these items!",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.red,
-                    textColor: Colors.white,
-                    fontSize: 16.0,
-                  );
-                }   
-                Navigator.pop(context);  
-              },
-              icon: const Icon(
-                Icons.shopping_cart,
-                color: Colors.white,
-                size: 25,
+            ],
+          ),
+          // Buy button
+          ElevatedButton.icon(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               ),
-              label: const Text(
-                "Buy",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
               ),
             ),
-            ],
-            );
-          },
-        ),
+            onPressed: () {
+              // Dispatch PurchaseProducts event to CartBloc
+              context.read<CartBloc>().add(PurchaseProducts(totalAmount: totalAmount));
+
+              // Optionally show a loading indicator or a toast for the purchase action
+            },
+            icon: const Icon(
+              Icons.shopping_cart,
+              color: Colors.white,
+              size: 25,
+            ),
+            label: const Text(
+              "Buy Now",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

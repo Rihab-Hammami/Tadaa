@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:tadaa/Data/users.dart';
 import 'package:tadaa/core/utils/app_colors.dart';
 import 'package:tadaa/features/profile_page/presentation/widgets/aboutTabView.dart';
@@ -78,18 +78,18 @@ with SingleTickerProviderStateMixin {
                   top: top / 1.5,
                   child: buildProfileImage(),
                 ),
-                Positioned(
+                /*Positioned(
                   top: 280,
                   child: Center(
                     child: Text(
-                      currentUser.name,
+                     currentUser.name,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ),
+                ),*/
                 Positioned(
                   top: 315,
                   child: Container(
@@ -159,8 +159,8 @@ with SingleTickerProviderStateMixin {
                     child: TabBarView(
                       controller: tabController,
                       children: [                     
-                        TimelineWidget(),                       
-                        AboutWidget(),
+                        //TimelineWidget(),                       
+                       // AboutWidget(),
                        
                       ],
                     ),
@@ -252,3 +252,4 @@ with SingleTickerProviderStateMixin {
     );
   }
 }
+*/

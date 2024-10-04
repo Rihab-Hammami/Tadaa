@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "372528255087",
+    "project_id": "tadaaapp-33206",
+    "storage_bucket": "tadaaapp-33206.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:372528255087:android:77d7705d8d5c8b5a6f7d9a",
+        "android_client_info": {
+          "package_name": "com.example.tadaa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdl2HqEFyXf2DUXA4Thu0L0LJPr0SibtE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

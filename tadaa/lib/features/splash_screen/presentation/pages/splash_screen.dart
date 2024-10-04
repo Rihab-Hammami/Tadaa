@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tadaa/core/utils/app_colors.dart';
-import 'package:tadaa/features/home_page/presentation/pages/home_screen.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/nav_bar.dart';
 import 'package:tadaa/features/onBording_Screens/presentation/onBording_screen.dart';
 

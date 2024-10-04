@@ -19,6 +19,13 @@ class _SignInFormState extends State<SignInForm> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+@override
+  void initState() {
+    super.initState();
+    // Pre-fill the username and password
+    _usernameController.text = "safe";
+    _passwordController.text = "safe123";
+  }
   @override
   Widget build(BuildContext context) {
     final signInBloc = Provider.of<SignInBloc>(context, listen: false);

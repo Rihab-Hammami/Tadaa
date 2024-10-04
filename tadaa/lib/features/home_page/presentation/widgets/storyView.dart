@@ -31,6 +31,7 @@ class _StoryViewState extends State<StoryView> {
       });
     });
   }
+  
   @override
   void initState() {
     startTimer();
@@ -77,7 +78,7 @@ class _StoryViewState extends State<StoryView> {
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),

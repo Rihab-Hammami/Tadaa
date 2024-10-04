@@ -77,12 +77,12 @@ class _StoryWidgetState extends State<StoryWidget> {
       curve: Curves.easeIn,
     );
 
-    final currentIndex = users.indexOf(widget.user);
-    final isLastPage = users.length - 1 == currentIndex;
+    //final currentIndex = users.indexOf(widget.user);
+    //final isLastPage = users.length - 1 == currentIndex;
 
-    if (isLastPage) {
+    /*if (isLastPage) {
       Navigator.of(context).pop();
-    }
+    }*/
   }
 
   @override
@@ -125,12 +125,12 @@ class _StoryWidgetState extends State<StoryWidget> {
                       },
                     ),
                   ),
-                  Positioned(         
+                 /* Positioned(         
                   child: ProfileWidget(
                     user: widget.user,
                     date: date,
                   ),
-              ),
+              ),*/
                   Positioned(
                     top: 40,
                     right: 5,

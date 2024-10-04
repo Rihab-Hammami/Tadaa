@@ -1,11 +1,13 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tadaa/core/utils/app_colors.dart';
 import 'package:tadaa/features/addPost_page/presentation/pages/addPost.dart';
-import 'package:tadaa/features/home_page/presentation/pages/home_screen.dart';
+import 'package:tadaa/features/home_page/presentation/pages/home_page.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/button_widget.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/pages/marketPlacePage.dart';
-import 'package:tadaa/features/notification_page/pages/notification.dart';
+import 'package:tadaa/features/notification_page/presentation/pages/notification.dart';
+import 'package:tadaa/features/profile_page/presentation/pages/profile_page.dart';
 import 'package:tadaa/features/profile_page/presentation/pages/profile_screen.dart';
 
 class NavBar extends StatefulWidget {
@@ -16,18 +18,35 @@ class NavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<NavBar> {
+    String uid = ''; // Initialize as an empty string
+
+  void _getCurrentUser() {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+
+    if (user != null) {
+      setState(() {
+        uid = user.uid;  // Set the user id in state after initialization
+      });
+    } else {
+      // Handle if no user is logged in (you can navigate to a login page)
+      print("No user is currently logged in");
+    }
+  }
   int _selectedIndex = 0;
   List<Widget> _pages = [];
-  Home_Screen homeScreen = Home_Screen();
+  //Home_Screen homeScreen = Home_Screen();
+  HomePage homeScreen = HomePage();
 
   @override
   void initState() {
     super.initState();
+    _getCurrentUser(); 
     _pages = [
       homeScreen,
       notification(),
       MarketPlacePage(),
-      ProfileScreen(),
+      ProfilePage(uid: uid,),
     ];
   }
 
@@ -38,8 +57,7 @@ class _NavBarState extends State<NavBar> {
   }
 
    void _addPost(String caption, File? imageFile) {
-    final homeScreenState = Home_Screen.of(context);
-    homeScreenState?.addPost(caption, imageFile);
+    
     setState(() {
       _selectedIndex = 0;
     });
