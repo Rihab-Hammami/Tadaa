@@ -41,7 +41,14 @@ class StoryViewed extends StoryState {
   List<Object?> get props => [storyId];
 }
 
+class StoryDeleted extends StoryState {
+  final String storyId;
 
+  const StoryDeleted({required this.storyId});
+
+  @override
+  List<Object?> get props => [storyId];
+}
 // State when there's an error while adding a story
 class StoryError extends StoryState {
   final String error;

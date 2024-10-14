@@ -7,6 +7,7 @@ import 'package:tadaa/features/addPost_page/presentation/blocs/PostBloc.dart';
 import 'package:tadaa/features/addPost_page/presentation/blocs/PostEvent.dart';
 import 'package:tadaa/features/addPost_page/presentation/pages/CelebrationDetailScreen.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/commentWidget.dart';
+import 'package:tadaa/features/home_page/presentation/widgets/likedUsersModel.dart';
 import 'package:tadaa/features/profile_page/data/models/userModel.dart';
 import 'package:tadaa/features/profile_page/domain/repositories/profileRepository.dart';
 import 'package:tadaa/models/celebrationCat%C3%A9gorie.dart';
@@ -66,14 +67,27 @@ class _CelebrationPostWidgetState extends State<CelebrationPostWidget> {
     }
     return taggedUsersMap;
   }
-void _handleLikePost() async {
+/*void _handleLikePost() async {
     setState(() {
       isLiked = !isLiked;
       likeCount += isLiked ? 1 : -1;
     });
     widget.postRepository.likePost(widget.post.postId, widget.currentUserId);
-  }
-
+  }*/
+void _handleLikePost() async {
+  setState(() {
+    if (isLiked) {
+      widget.post.likes?.remove(widget.currentUserId); // Remove current user from likes list
+    } else {
+      widget.post.likes?.add(widget.currentUserId); // Add current user to likes list
+    }
+    isLiked = !isLiked; // Toggle liked state
+    likeCount = widget.post.likes?.length ?? 0; // Update the like count based on the updated list
+  });
+  
+  // Call the repository to update the like status in the backend
+  widget.postRepository.likePost(widget.post.postId, widget.currentUserId);
+}
   void _showBottomSheet() {
      if (widget.post.userId != widget.currentUserId) {
       return; // Don't show bottom sheet if not the owner of the post.
@@ -128,7 +142,7 @@ void _handleLikePost() async {
           ),
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop(true); // Return true
+              Navigator.of(context).pop(true); 
             },
             child: const Text('Delete'),
           ),
@@ -156,14 +170,14 @@ void _handleLikePost() async {
   @override
   Widget build(BuildContext context) {
     final post = {
-      'username': 'user123',
-      'profImage': 'https://via.placeholder.com/150',
-      'eventType': "Promotion",
-      'eventImage': 'assets/images/birthday.png',
-      'text': "Merci d'avoir terminé le projet dans un temps record. ",
-      'likes': 120,
-      'datePublished': DateTime.now(),
-      'taggedUser': 'tagged user'
+      'username': '',
+      'profImage': '',
+      'eventType': "",
+      'eventImage': '',
+      'text': " ",
+      'likes': '',
+      'datePublished': '',
+      'taggedUser': ''
     };
 
     return Container(
@@ -185,10 +199,8 @@ void _handleLikePost() async {
 
           // Reactions Row
           _buildReactions(post),
-          Divider(),
+         
 
-          // Additional Information
-          _buildAdditionalInfo(post),
         ],
       ),
     );
@@ -223,7 +235,7 @@ void _handleLikePost() async {
                 fit: BoxFit.cover,
               ),
             ),
-            Expanded(
+                    Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 8),
                         child: Column(
@@ -308,7 +320,6 @@ void _handleLikePost() async {
   }
 
   Widget _buildEventCard(Map<String, dynamic> post) {
-     print('Image Path: ${widget.post.image}');
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -374,19 +385,58 @@ void _handleLikePost() async {
                         : const Icon(Icons.favorite_border, size: 30),
                     onPressed: _handleLikePost,
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.comment_outlined, size: 30),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CommentsWidget(
-                            postId: widget.post.postId,
-                            profileRepository: widget.profileRepository,
-                            postRepository: widget.postRepository,
-                            onCommentAdded: _refreshCommentCount,
+                  if (likeCount > 0) 
+                  GestureDetector(
+                    onTap: () async {
+                 // Fetch liked users
+                  List<Map<String, dynamic>> likedUsers = await widget.postRepository.fetchLikedUsers(widget.post.likes ?? []);
+
+                  // Show the modal with the liked users list
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return LikedUsersModal(likedUsers: likedUsers);
+                    },
+                  );
+                },
+                    child: Text(
+                    '$likeCount ',
+                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800),),
+                  ),
+                   FutureBuilder<int>(
+                    future: _commentCountFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox.shrink(); // Placeholder while loading
+                      }
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}'); // Handle errors gracefully
+                      }
+                      final commentCount = snapshot.data ?? 0; // Fallback to 0 if no data
+                      return Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.comment_outlined, size: 30),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CommentsWidget(
+                                    postId: widget.post.postId,
+                                    profileRepository: widget.profileRepository,
+                                    postRepository: widget.postRepository,
+                                    onCommentAdded: _refreshCommentCount,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        ),
+                          if (commentCount > 0) 
+                          Text(
+                            '$commentCount', // Display the count of comments
+                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800),
+                          ),
+                        ],
                       );
                     },
                   ),
@@ -394,59 +444,6 @@ void _handleLikePost() async {
               );
   }
 
- Widget _buildAdditionalInfo(Map<String, dynamic> post) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 16),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          '$likeCount likes',
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800),
-        ),
-        FutureBuilder<int>(
-          future: _commentCountFuture,
-          builder: (context, commentSnapshot) {
-            if (commentSnapshot.connectionState == ConnectionState.waiting) {
-              return const Text('Loading comments...');
-            }
-            if (commentSnapshot.hasError) {
-              return Text('Error: ${commentSnapshot.error}');
-            }
-            final count = commentSnapshot.data ?? 0; // Fallback to 0 if no data
-            return InkWell(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '($count) View all comments',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CommentsWidget(
-                      postId: widget.post.postId,
-                      profileRepository: widget.profileRepository,
-                      postRepository: widget.postRepository,
-                      onCommentAdded: _refreshCommentCount,
-                    ),
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ],
-    ),
-  );
-}
 
 }
 void _showTaggedUsersDialog(BuildContext context, Map<String, String> taggedUsers) {

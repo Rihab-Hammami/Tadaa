@@ -35,3 +35,8 @@ class PurchaseProducts extends CartEvent {
 
   PurchaseProducts({required this.totalAmount,});
 }
+class FetchPurchases extends CartEvent {
+  final String userId;
+
+  FetchPurchases(this.userId);
+}

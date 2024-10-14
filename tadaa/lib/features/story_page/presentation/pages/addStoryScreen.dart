@@ -134,22 +134,22 @@ Future<void> _pickImage() async {
               ),
       ),
       // Close Button - Only show when an image is selected
-      if (_imageFile != null) // Show close button only if the image is selected
-        Positioned(
-          top: 4,
-          right: 4,
-          child: IconButton(
-            icon: Icon(Icons.close, color: Colors.black, size: 30),
-            onPressed: () {
-              setState(() {
-                _imageFile = null; // Remove the image when close button is pressed
-              });
-            },
+              if (_imageFile != null) // Show close button only if the image is selected
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: IconButton(
+                    icon: Icon(Icons.close, color: Colors.black, size: 30),
+                    onPressed: () {
+                      setState(() {
+                        _imageFile = null; // Remove the image when close button is pressed
+                      });
+                    },
+                  ),
+                ),
+            ],
           ),
         ),
-    ],
-  ),
-),
 
                       
                       SizedBox(height: 16), // Space between image and text field

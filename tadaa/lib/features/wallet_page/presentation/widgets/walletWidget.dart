@@ -87,7 +87,7 @@ class WalletCard extends StatelessWidget {
                     formattedTime, // Time (e.g., 08:00)
                     style: const TextStyle(
                       fontSize: 14,
-                      color: Colors.blueAccent,
+                      color: Colors.blue,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -95,7 +95,7 @@ class WalletCard extends StatelessWidget {
                     formattedDate, // Date (e.g., 10 Juillet 2023)
                     style: const TextStyle(
                       fontSize: 14,
-                      color: Colors.blueAccent,
+                      color: Colors.blue,
                     ),
                   ),
                 ],

@@ -1,5 +1,4 @@
 // lib/features/sign_in_screen/presentation/widgets/sign_in_form.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Use Provider for state management
 import 'package:tadaa/features/sign_in_screen/presentation/bloc/sign_in_bloc.dart';
@@ -23,13 +22,13 @@ class _SignInFormState extends State<SignInForm> {
   void initState() {
     super.initState();
     // Pre-fill the username and password
-    _usernameController.text = "safe";
-    _passwordController.text = "safe123";
+    _usernameController.text = "rihab";
+    _passwordController.text = "rihab123";
   }
+
   @override
   Widget build(BuildContext context) {
     final signInBloc = Provider.of<SignInBloc>(context, listen: false);
-
     return Form(
       key: _formSignInKey,
       child: Column(
@@ -99,31 +98,31 @@ class _SignInFormState extends State<SignInForm> {
                             ),
                           ),
                           SizedBox(height: 20,),
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                if (_formSignInKey.currentState!.validate()) {
-                  signInBloc.signIn(
-                    context,
-                    widget.realm,
-                    _usernameController.text.trim(),
-                    _passwordController.text.trim(),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                primary: AppColors.bleu,
-                onPrimary: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formSignInKey.currentState!.validate()) {
+                              signInBloc.signIn(
+                                context,
+                                widget.realm,
+                                _usernameController.text.trim(),
+                                _passwordController.text.trim(),
+                              );
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.bleu,
+                      onPrimary: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: Text("Sign In", style: TextStyle(fontSize: 15)),
+                  ),
                 ),
-              ),
-              child: Text("Sign In", style: TextStyle(fontSize: 15)),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          );
+      }
 }

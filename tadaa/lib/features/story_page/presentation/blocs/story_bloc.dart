@@ -64,6 +64,20 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
       }
     });
 
+    on<DeleteStoryEvent>((event, emit) async {
+  emit(StoryLoading()); // Emit loading state
+
+  try {
+    // Call repository to delete the story
+    await storyRepository.deleteStory(event.storyId, event.mediaUrl);
+
+    // Emit success state after the story is deleted
+    emit(StoryDeleted(storyId: event.storyId));
+  } catch (e) {
+    // Emit error state if something goes wrong
+    emit(StoryError(error: e.toString()));
+  }
+});
      
   }
 }

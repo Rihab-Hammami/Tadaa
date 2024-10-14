@@ -29,13 +29,26 @@ class _CommentsWidgetState extends State<CommentsWidget> {
   final TextEditingController commentEditingController = TextEditingController();
   late Future<List<CommentModel>> _commentsFuture;
   int likeCommentCount = 0;
+   String? postOwnerId;
+   String? userId;
   @override
   void initState() {
     super.initState();
     _commentsFuture = widget.postRepository.fetchComments(widget.postId);
-   
+     fetchPostOwner();
   }
 
+ Future<void> fetchPostOwner() async {
+    try {
+      final ownerId = await widget.postRepository.getPostOwnerId(widget.postId);
+      setState(() {
+        postOwnerId = ownerId;
+      });
+      print("post ownerid:$postOwnerId");
+    } catch (e) {
+      print('Error fetching post owner: $e');
+    }
+  }
   void _deleteComment(CommentModel comment) async {
     try {
       await widget.postRepository.deleteComment(widget.postId, comment.id.toString());
@@ -124,13 +137,14 @@ class _CommentsWidgetState extends State<CommentsWidget> {
       await widget.postRepository.addComment(widget.postId, newComment, user.uid);
       widget.onCommentAdded(); // Notify parent about new comment
       commentEditingController.clear();
+      setState(() {
+        _commentsFuture = widget.postRepository.fetchComments(widget.postId);
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Comment posted')),
       );
 
-      setState(() {
-        _commentsFuture = widget.postRepository.fetchComments(widget.postId);
-      });
+      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to post comment: $e')),
@@ -141,8 +155,8 @@ class _CommentsWidgetState extends State<CommentsWidget> {
   Future<UserModel> _fetchUserProfile() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
-      String userId = currentUser.uid;
-      return await widget.profileRepository.getUserProfile(userId);
+      userId = currentUser.uid;
+      return await widget.profileRepository.getUserProfile(userId!);
     }
     throw Exception('No user is logged in');
   }
@@ -195,7 +209,9 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                   onDelete: () => _deleteComment(comment),
                   onUpdate: () => _showUpdateDialog(comment),
                   onLike: (commentId, userId) => _likeComment(commentId, userId),
-                  userId: user.uid, // Pass user ID for liking
+                  //userId: user.uid, 
+                  userId: userId!,
+                  postOwnerId: postOwnerId!,// Pass user ID for liking
                 );
                 },
               );

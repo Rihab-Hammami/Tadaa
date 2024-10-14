@@ -42,7 +42,19 @@ class PostRepository {
      if (post.type == 'simple' || post.type == 'celebration') {
       await _walletRepository.addPoints(userId, 10, 'Create Post', postRef.id);
       _profileBloc.add(FetchProfile(userId));
-      
+
+       if (post.taggedUsers.isNotEmpty) {
+    for (String taggedUserId in post.taggedUsers) {
+      final taggedUserNotification = NotificationModel(
+        userId: userId, // Send notification to the tagged user
+        actionType: 'tag',
+        actionId: postRef.id,
+        date: DateTime.now(),
+        recipientId: taggedUserId
+      );
+      await _notificationRepository.addNotification(taggedUserNotification);
+    }
+  }
         
       /*final notification = NotificationModel(
         userId: userId,           // The creator of the post
@@ -59,20 +71,12 @@ class PostRepository {
       // Transfer points to the recipient of the appreciation
       await _walletRepository.transferPoints(post.userId, post.taggedUsers, post.points!, postRef.id);
       _profileBloc.add(FetchProfile(userId));
-       final notification = NotificationModel(
-      userId: userId,
-      actionType: 'Appreciation Post',
-      actionId: postRef.id,
-      date: DateTime.now(),
-      recipientId: userId,
-    );
-    await _notificationRepository.addNotification(notification);
-    }
-     if (post.taggedUsers.isNotEmpty) {
+      
+      if (post.taggedUsers.isNotEmpty) {
     for (String taggedUserId in post.taggedUsers) {
       final taggedUserNotification = NotificationModel(
         userId: userId, // Send notification to the tagged user
-        actionType: 'tag',
+        actionType: 'Appreciation Post',
         actionId: postRef.id,
         date: DateTime.now(),
         recipientId: taggedUserId
@@ -80,6 +84,16 @@ class PostRepository {
       await _notificationRepository.addNotification(taggedUserNotification);
     }
   }
+      /* final notification = NotificationModel(
+      userId: userId,
+      actionType: 'Appreciation Post',
+      actionId: postRef.id,
+      date: DateTime.now(),
+      recipientId: userId,
+    );
+    await _notificationRepository.addNotification(notification);*/
+    }
+     
 
     return postRef.id;
   
@@ -149,6 +163,24 @@ class PostRepository {
   }
   return res;
 }
+// Function to fetch user details based on the list of user IDs
+Future<List<Map<String, dynamic>>> fetchLikedUsers(List<String> likedUserIds) async {
+  List<Map<String, dynamic>> likedUsers = [];
+  
+  try {
+    // Query Firestore for the users based on the likedUserIds
+    for (String userId in likedUserIds) {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      if (userSnapshot.exists) {
+        likedUsers.add(userSnapshot.data() as Map<String, dynamic>);
+      }
+    }
+  } catch (e) {
+    print("Error fetching liked users: $e");
+  }
+  return likedUsers;
+}
+
 Future<void> addComment(String postId, CommentModel comment, String uid) async {
     try {
         final postRef = _firestore.collection('posts').doc(postId);
@@ -364,5 +396,24 @@ Future<List<PostModel>> fetchPostsByUserId(String userId) async {
       .map((doc) => PostModel.fromFirestore(doc.data()))
       .toList();
 }
+Future<String> getPostOwnerId(String postId) async {
+  try {
+    // Fetch the post document
+    DocumentSnapshot postSnapshot = await _firestore.collection('posts').doc(postId).get();
+
+    // Check if the post exists
+    if (!postSnapshot.exists) {
+      throw Exception('Post not found');
+    }
+
+    // Retrieve the post owner ID (userId)
+    final postOwnerId = postSnapshot.get('userId') as String;
+
+    return postOwnerId;
+  } catch (e) {
+    throw Exception('Failed to fetch post owner ID: $e');
+  }
+}
+
 
 }

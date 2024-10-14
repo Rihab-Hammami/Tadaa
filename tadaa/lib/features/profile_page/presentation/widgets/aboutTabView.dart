@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tadaa/core/utils/session_manager.dart';
@@ -49,8 +50,30 @@ class _AboutWidgetState extends State<AboutWidget> {
       refreshToken = fetchedRefreshToken;
     });
   }
-
-  void _showLogoutConfirmationDialog(BuildContext context) {
+void _showLogoutConfirmationDialog(BuildContext context) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.info,
+      animType: AnimType.bottomSlide,
+      title: 'Confirm Logout',
+      desc: 'Are you sure you want to logout?',
+      btnCancelOnPress: () {
+        // This will just close the dialog
+      },
+      btnOkOnPress: () async {
+        if (realm != null && refreshToken != null) {
+          await logout(context, realm!, refreshToken!);
+        }
+      },
+      
+      btnOkText: 'Logout',
+      btnCancelText: 'Cancel',
+      btnOkColor: Colors.blue, // Confirm button color
+      btnCancelColor: Colors.grey,
+      
+    ).show();
+  }
+  /*void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog<void>(
       context: context,
       barrierDismissible: false, 
@@ -64,7 +87,7 @@ class _AboutWidgetState extends State<AboutWidget> {
         );
       },
     );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {

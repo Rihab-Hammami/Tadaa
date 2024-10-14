@@ -9,6 +9,7 @@ import 'package:tadaa/features/addPost_page/presentation/blocs/PostBloc.dart';
 import 'package:tadaa/features/addPost_page/presentation/blocs/PostEvent.dart';
 import 'package:tadaa/features/addPost_page/presentation/pages/publicationPage.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/commentWidget.dart';
+import 'package:tadaa/features/home_page/presentation/widgets/likedUsersModel.dart';
 import 'package:tadaa/features/profile_page/data/models/userModel.dart';
 import 'package:tadaa/features/profile_page/domain/repositories/profileRepository.dart';
 
@@ -66,14 +67,29 @@ class _PostCardState extends State<SimplePostWidget> {
     }
     return taggedUsersMap;
   }
-
   void _handleLikePost() async {
+  setState(() {
+    if (isLiked) {
+      widget.post.likes?.remove(widget.currentUserId); // Remove current user from likes list
+    } else {
+      widget.post.likes?.add(widget.currentUserId); // Add current user to likes list
+    }
+    isLiked = !isLiked; // Toggle liked state
+    likeCount = widget.post.likes?.length ?? 0; // Update the like count based on the updated list
+  });
+  
+  // Call the repository to update the like status in the backend
+  widget.postRepository.likePost(widget.post.postId, widget.currentUserId);
+}
+
+
+  /*oid _handleLikePost() async {
     setState(() {
       isLiked = !isLiked;
       likeCount += isLiked ? 1 : -1;
     });
     widget.postRepository.likePost(widget.post.postId, widget.currentUserId);
-  }
+  }*/
 
   void _showBottomSheet() {
      if (widget.post.userId != widget.currentUserId) {
@@ -329,10 +345,18 @@ class _PostCardState extends State<SimplePostWidget> {
                           height: MediaQuery.of(context).size.height * 0.35,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(5),
+                            /*boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3), // Shadow color with transparency
+                              spreadRadius: 1, // How much the shadow spreads
+                              blurRadius: 8, // The blur effect of the shadow
+                              offset: Offset(0, 4), // Offset for the shadow (x,y)
+                            ),
+                           ],*/
                           ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(10),
                             child: Image.network(
                               widget.post.image!,
                               fit: BoxFit.fill,
@@ -354,77 +378,66 @@ class _PostCardState extends State<SimplePostWidget> {
                     
                   ),
                   
-                  IconButton(
-                    icon: const Icon(Icons.comment_outlined, size: 30),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CommentsWidget(
-                            postId: widget.post.postId,
-                            profileRepository: widget.profileRepository,
-                            postRepository: widget.postRepository,
-                            onCommentAdded: _refreshCommentCount,
+                  if (likeCount > 0) 
+                  GestureDetector(
+                    onTap: () async {
+                       
+                 // Fetch liked users
+                  List<Map<String, dynamic>> likedUsers = await widget.postRepository.fetchLikedUsers(widget.post.likes ?? []);
+
+                  // Show the modal with the liked users list
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return LikedUsersModal(likedUsers: likedUsers);
+                    },
+                  );
+                },
+                    child: Text(
+                    '$likeCount ',
+                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800),),
+                  ),
+                   FutureBuilder<int>(
+                    future: _commentCountFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox.shrink(); // Placeholder while loading
+                      }
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}'); // Handle errors gracefully
+                      }
+                      final commentCount = snapshot.data ?? 0; // Fallback to 0 if no data
+                      return Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.comment_outlined, size: 30),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CommentsWidget(
+                                    postId: widget.post.postId,
+                                    profileRepository: widget.profileRepository,
+                                    postRepository: widget.postRepository,
+                                    onCommentAdded: _refreshCommentCount,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        ),
+                          if (commentCount > 0) 
+                          Text(
+                            '$commentCount', // Display the count of comments
+                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800),
+                          ),
+                        ],
                       );
                     },
                   ),
                 ],
               ),
-              // COMMENTS, DATE, AND ADDITIONAL INFO SECTION
-              const Divider(),
-             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    '$likeCount likes',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800),
-                  ),
-                  FutureBuilder<int>(
-                    future: _commentCountFuture,
-                    builder: (context, commentSnapshot) {
-                      if (commentSnapshot.connectionState == ConnectionState.waiting) {
-                        return const Text('Loading comments...');
-                      }
-                      if (commentSnapshot.hasError) {
-                        return Text('Error: ${commentSnapshot.error}');
-                      }
-                      final count = commentSnapshot.data ?? 0; // Fallback to 0 if no data
-                      return InkWell(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            '($count) View all comments',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CommentsWidget(
-                                postId: widget.post.postId,
-                                profileRepository: widget.profileRepository,
-                                postRepository: widget.postRepository,
-                                onCommentAdded: _refreshCommentCount,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ],
-          ),
-        )]
+              
+        ]
         ));
       },
     );

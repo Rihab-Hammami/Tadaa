@@ -23,7 +23,10 @@ class _InfoWidgetState extends State<InfoWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Info'),
+        title: Text(
+          'Add Info',
+          style: TextStyle(fontWeight: FontWeight.bold),
+          ),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(), // Dismiss keyboard when tapping outside
@@ -45,12 +48,9 @@ class _InfoWidgetState extends State<InfoWidget> {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  // Call the onSubmit callback if it's provided
                   if (widget.onSubmit != null) {
                     widget.onSubmit!(_textEditingController.text);
-                  }
-                  
-                  // Pass the entered text back to the parent widget
+                  }                 
                   Navigator.pop(context, _textEditingController.text);
                 },
                 child: Text('Submit'),

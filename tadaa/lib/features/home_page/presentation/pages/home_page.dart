@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _getUserId(); 
-    _fetchStories();
+   /* _fetchStories();
     _fetchPosts();
     _fetchProfile();
     
@@ -60,8 +60,22 @@ class _HomePageState extends State<HomePage> {
   walletRepository: walletRepository,
   profileBloc: BlocProvider.of<ProfileBloc>(context),
   notificationRepository: notificationRepository, 
- ); 
+ );*/
 }
+ @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Now access the BLoCs after the widget is mounted
+    postRepository = PostRepository(
+      walletRepository: walletRepository,
+      profileBloc: BlocProvider.of<ProfileBloc>(context),
+      notificationRepository: notificationRepository,
+    );
+
+    _fetchStories();
+    _fetchPosts();
+    _fetchProfile();
+  }
 void _fetchStories() {
   final storyBloc = BlocProvider.of<StoryBloc>(context);
   storyBloc.add(FetchAllStoriesEvent());

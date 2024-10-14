@@ -160,7 +160,7 @@ class NotificationCard extends StatelessWidget {
                         formattedTime, // Time (e.g., 08:00)
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.blueAccent,
+                          color: Colors.blue,
                         ),
                       ),
                       SizedBox(height: 4),
@@ -168,7 +168,7 @@ class NotificationCard extends StatelessWidget {
                         formattedDate, // Date (e.g., 10 Juillet 2023)
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.blueAccent,
+                          color: Colors.blue,
                         ),
                       ),
                     ],

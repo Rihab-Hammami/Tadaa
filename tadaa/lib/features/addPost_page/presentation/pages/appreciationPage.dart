@@ -48,9 +48,11 @@ class _AppreciationPageState extends State<AppreciationPage> {
 
   Future<void> _fetchUserId() async {
     final id = await UserInfo.getUserId();
-    setState(() {
-      userId = id;
-    });
+    if (mounted) {
+      setState(() {
+        userId = id;
+      });
+    }
   }
 
   @override
@@ -68,6 +70,11 @@ class _AppreciationPageState extends State<AppreciationPage> {
     };
     _fetchUserId();
   }
+  @override
+void dispose() {
+  captionController.dispose(); 
+  super.dispose();
+}
 
   bool _validateFields() {
     if (taggedUsers.isEmpty) {
@@ -101,23 +108,28 @@ class _AppreciationPageState extends State<AppreciationPage> {
       body: BlocListener<PostBloc, PostState>(
         listener: (context, state) {
           if (state is PostLoading) {
-            _showLoadingDialog(context);
+            //_showLoadingDialog(context);
+            CircularProgressIndicator();
           } else if (state is PostCreateSuccess) {
-            _dismissLoadingDialog();
-            BlocProvider.of<PostBloc>(context).add(FetchAllPostsEvent());
-            Navigator.of(context).pop(); // Go back to previous screen
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Post created Successfully!')),
-            );
-            Navigator.of(context).pop(); 
+            //_dismissLoadingDialog();
+            Navigator.pop(context);
+              BlocProvider.of<PostBloc>(context).add(FetchAllPostsEvent());
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Post created Successfully!')),
+              );
+           
+           /* Navigator.of(context).pop(); // Go back to previous screen
+             if (mounted) {
+              Navigator.of(context).pop(); // Go back to previous screen
+              _showSnackBar('Post created Successfully!');
+            }
+           Navigator.of(context).pop(); */
           } else if (state is PostUpdateSuccess) {
-            _dismissLoadingDialog();
-            BlocProvider.of<PostBloc>(context).add(FetchAllPostsEvent());
-            Navigator.of(context).pop(); // Go back to previous screen
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Post updated Successfully!')),
-            );
-            Navigator.of(context).pop(); 
+            Navigator.pop(context);
+              BlocProvider.of<PostBloc>(context).add(FetchAllPostsEvent());
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Post updated Successfully!')),
+              );
           } else if (state is PostError) {
             Navigator.of(context).pop();
             ScaffoldMessenger.of(context).showSnackBar(
@@ -243,7 +255,7 @@ class _AppreciationPageState extends State<AppreciationPage> {
                 ),
                 SizedBox(height: 15),
                 Text(
-                  "Your message",
+                  "Enter message",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 SizedBox(height: 15),
@@ -255,7 +267,7 @@ class _AppreciationPageState extends State<AppreciationPage> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 25),
                 Center(
                   child: SizedBox(
                     width: double.infinity,
@@ -298,6 +310,7 @@ class _AppreciationPageState extends State<AppreciationPage> {
                               ),
                           );
                         }
+                        
                       },
                       style: ElevatedButton.styleFrom(
                         primary: Colors.blue, 
@@ -344,10 +357,14 @@ class _AppreciationPageState extends State<AppreciationPage> {
   void _dismissLoadingDialog() {
     if (_dialogCompleter != null) {
       _dialogCompleter?.future.then((_) {
-        Navigator.of(context, rootNavigator: true).pop();
+       if (mounted) {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
       });
     } else {
-      Navigator.of(context, rootNavigator: true).pop();
+       if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
     }
   }
 }

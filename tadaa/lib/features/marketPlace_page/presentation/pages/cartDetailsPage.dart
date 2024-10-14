@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/blocs/cart_bloc.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/blocs/cart_event.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/blocs/cart_state.dart';
-import 'package:awesome_dialog/awesome_dialog.dart'; // Import AwesomeDialog
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:tadaa/features/profile_page/presentation/widgets/rewardsTabView.dart'; // Import AwesomeDialog
 
 class CartDetailsPage extends StatelessWidget {
   @override
@@ -20,17 +21,19 @@ class CartDetailsPage extends StatelessWidget {
            AwesomeDialog(
             context: context,
             dialogType: DialogType.success,
-            animType: AnimType.scale,
+            animType: AnimType.bottomSlide,
             title: 'Purchase Successful',
             desc: state.message,
-            btnOkOnPress: () {},
-            customHeader: Icon(Icons.check_circle, color: Colors.green, size: 48), // Custom icon
+            btnOkOnPress: () {
+              Navigator.pop(context);
+            },
+            //customHeader: Icon(Icons.check_circle, color: Colors.green, size: 48), // Custom icon
           ).show();
           } else if (state is PurchaseFailure) {
           AwesomeDialog(
     context: context,
     dialogType: DialogType.error,
-    animType: AnimType.scale,
+    animType: AnimType.bottomSlide,
     title: 'Purchase Failed',
     desc: state.message, // Use the error message from the state
     btnOkOnPress: () {
@@ -38,21 +41,9 @@ class CartDetailsPage extends StatelessWidget {
     },
     btnOkColor: Colors.red, // Set the button color to red
     headerAnimationLoop: false,
-    showCloseIcon: true, // Show close icon
+    //showCloseIcon: true, // Show close icon
     closeIcon: const Icon(Icons.close),
-    customHeader: Padding(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        children: [
-          Icon(
-            Icons.error_outline, // Custom error icon
-            color: Colors.red,
-            size: 40, // Customize the icon size
-          ),
-          const SizedBox(height: 10), // Space between the icon and the title
-        ],
-      ),
-    ),
+    
   ).show();
           }
         },
@@ -194,11 +185,8 @@ class CartDetailsPage extends StatelessWidget {
                 ),
               ),
             ),
-            onPressed: () {
-              // Dispatch PurchaseProducts event to CartBloc
+            onPressed: () {    
               context.read<CartBloc>().add(PurchaseProducts(totalAmount: totalAmount));
-
-              // Optionally show a loading indicator or a toast for the purchase action
             },
             icon: const Icon(
               Icons.shopping_cart,

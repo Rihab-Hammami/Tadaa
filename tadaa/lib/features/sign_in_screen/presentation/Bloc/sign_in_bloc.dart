@@ -96,7 +96,7 @@ class SignInBloc {
     print('Lastname: $retrievedLastname');
     print('Name: $retrievedName');
     print('Email: $email');
-    print('Role: $role');
+   // print('Role: $role');
 
     return {
       'username': retrievedUsername,

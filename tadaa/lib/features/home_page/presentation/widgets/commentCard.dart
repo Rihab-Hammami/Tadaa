@@ -10,7 +10,7 @@ class CommentCard extends StatefulWidget {
   final VoidCallback onUpdate; // Callback for update action
   final Function(String, String) onLike; // Callback for like action
   final String userId; // ID of the user liking the comment
-
+  final String postOwnerId; 
   const CommentCard({
     Key? key,
     required this.comment, // Accept CommentModel
@@ -19,7 +19,8 @@ class CommentCard extends StatefulWidget {
     required this.onDelete,
     required this.onUpdate,
     required this.onLike,
-    required this.userId, // ID of the user
+    required this.userId, 
+    required this.postOwnerId, // ID of the user
   }) : super(key: key);
 
   @override
@@ -29,7 +30,7 @@ class CommentCard extends StatefulWidget {
 class _CommentCardState extends State<CommentCard> {
   late bool _isLiked;
   int likeCount = 0;
-
+ 
   @override
   void initState() {
     super.initState();
@@ -47,6 +48,8 @@ class _CommentCardState extends State<CommentCard> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isCommentOwner = widget.comment.userId == widget.userId;
+    final bool isPostOwner=widget.postOwnerId==widget.userId;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Row(
@@ -118,31 +121,44 @@ class _CommentCardState extends State<CommentCard> {
                 onPressed: _toggleLike, // Handle like action
               ),
               // No Padding or SizedBox added
-              PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'delete') {
-                    widget.onDelete(); // Trigger the delete action
-                  } else if (value == 'update') {
-                    widget.onUpdate(); // Trigger the update action
-                  }
-                },
-                itemBuilder: (BuildContext context) {
-                  return [
-                    const PopupMenuItem(
-                      value: 'delete',
-                      child: Text('Delete'),
-                    ),
-                    const PopupMenuItem(
-                      value: 'update',
-                      child: Text('Update'),
-                    ),
-                  ];
-                },
-                icon: const Icon(
-                  Icons.more_vert,
-                  size: 16,
+              
+            
+                if (isCommentOwner || isPostOwner) // Show menu if comment owner or post owner
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      widget.onDelete(); // Trigger delete action
+                    } else if (value == 'update' && isCommentOwner) {
+                      widget.onUpdate(); // Trigger update action only if the current user is the comment owner
+                    }
+                  },
+                  itemBuilder: (BuildContext context) {
+                    // Conditional items based on ownership
+                    if (isPostOwner && isCommentOwner) {
+                      // If the user is both the post owner and the comment owner
+                      return [
+                        const PopupMenuItem(value: 'update', child: Text('Update')),
+                        const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                      ];
+                    } else if (isPostOwner) {
+                      // If the user is only the post owner
+                      return [
+                        const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                      ];
+                    } else if (isCommentOwner) {
+                      // If the user is only the comment owner
+                      return [
+                        const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                        const PopupMenuItem(value: 'update', child: Text('Update')),
+                      ];
+                    }
+                    return []; 
+                  },
+                  icon: const Icon(
+                    Icons.more_vert,
+                    size: 16,
+                  ),
                 ),
-              ),
             ],
           ),
         ],

@@ -1,18 +1,14 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
-import 'package:tadaa/Data/users.dart';
 import 'package:tadaa/features/addPost_page/data/models/Post.dart';
 import 'package:tadaa/features/addPost_page/presentation/blocs/PostBloc.dart';
 import 'package:tadaa/features/addPost_page/presentation/blocs/PostEvent.dart';
 import 'package:tadaa/features/addPost_page/presentation/blocs/PostState.dart';
-import 'package:tadaa/features/home_page/presentation/pages/home_page.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/nav_bar.dart';
-import 'package:tadaa/features/onBording_Screens/widgets/button.dart';
 import 'package:tadaa/features/profile_page/domain/repositories/profileRepository.dart';
 import 'package:tadaa/features/user/userInfo.dart';
 import 'package:tadaa/models/celebrationCat%C3%A9gorie.dart';
@@ -68,9 +64,10 @@ class _CelebrationDetailScreenState extends State<CelebrationDetailScreen> {
       body: BlocListener<PostBloc, PostState>(
         listener: (context, state) {
             if (state is PostLoading) {
-              _showLoadingDialog(context);
+              //_showLoadingDialog(context);
+              CircularProgressIndicator();
             } else if (state is PostCreateSuccess) {
-              _dismissLoadingDialog();
+             // _dismissLoadingDialog();
               BlocProvider.of<PostBloc>(context).add(FetchAllPostsEvent());
                Navigator.of(context).pushReplacement(
                MaterialPageRoute(builder: (context) => NavBar()), // Replace HomeScreen with your actual home screen widget
@@ -80,7 +77,7 @@ class _CelebrationDetailScreenState extends State<CelebrationDetailScreen> {
               );
               //Navigator.of(context).pop(); 
             } else if (state is PostUpdateSuccess) {
-              _dismissLoadingDialog();
+              //_dismissLoadingDialog();
               BlocProvider.of<PostBloc>(context).add(FetchAllPostsEvent());
               Navigator.of(context).pushReplacement(
                MaterialPageRoute(builder: (context) => NavBar()), // Replace HomeScreen with your actual home screen widget

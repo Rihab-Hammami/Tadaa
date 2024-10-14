@@ -29,3 +29,11 @@ class PurchaseFailure extends CartState {
 
   PurchaseFailure({this.message = "Insufficient points!"});
 }
+class RewardInitial extends CartState {}
+
+class RewardLoading extends CartState {}
+class RewardLoaded extends CartState {
+  final List<Map<String, dynamic>> purchases;
+
+  RewardLoaded(this.purchases);
+}

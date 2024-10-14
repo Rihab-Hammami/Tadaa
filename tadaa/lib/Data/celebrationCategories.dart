@@ -8,12 +8,11 @@ final List<CelebrationCategory> categories = [
     iconAssetPath: 'assets/icons/success.png',
     imagePath: 'assets/images/success.png',
     text: "Congrats on your project success! Your effort made it happen!"
-
   ),
   CelebrationCategory(
     title: 'Goal achieved',
     iconAssetPath: 'assets/icons/goal_acheived.png',
-    imagePath: 'assets/images/goal_achieved.png',
+    imagePath: 'assets/images/goal.jpeg',
     text: "Goal achieved! Your persistence and effort made it happen!"
   ),
   CelebrationCategory(

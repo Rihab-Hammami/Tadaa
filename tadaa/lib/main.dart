@@ -37,7 +37,13 @@ void main() async {
   )
 );
   await initializeDateFormatting('fr_FR', null);
-  
+
+   final storyRepository = StoryRepository(
+    walletRepository: WalletRepository(),
+    notificationRepository: NotificationRepository(),
+    profileBloc: ProfileBloc(ProfileRepository(),)
+  );
+  await storyRepository.expireStories();
 
   
   runApp(

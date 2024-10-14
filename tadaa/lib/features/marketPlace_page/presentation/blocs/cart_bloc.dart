@@ -26,6 +26,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<DecrementProductQuantity>(_onDecrementProductQuantity);
     on<LoadCart>(_onLoadCart);
     on<PurchaseProducts>(_onPurchaseProducts);
+    on<FetchPurchases>(_onFetchPurchases);
   }
 
  Future<void> _onAddProductToCart(AddProductToCart event, Emitter<CartState> emit) async { 
@@ -115,6 +116,19 @@ Future<void> _onPurchaseProducts(PurchaseProducts event, Emitter<CartState> emit
   }
 }
 
+Future<void> _onFetchPurchases(FetchPurchases event, Emitter<CartState> emit) async {
+    emit(RewardLoading());
+    try {
+      // Fetch the user's purchases using the repository method
+      final purchases = await _cartRepository.fetchPurchases(event.userId);
+
+      // Emit CartLoaded state with fetched purchases
+      emit(RewardLoaded(purchases));
+    } catch (e) {
+      // Emit CartError state in case of failure
+      emit(CartError('Failed to fetch purchases: $e'));
+    }
+  }
 
 }
 

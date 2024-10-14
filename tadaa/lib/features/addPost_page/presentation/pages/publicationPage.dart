@@ -9,9 +9,6 @@ import 'package:tadaa/features/addPost_page/presentation/blocs/PostEvent.dart';
 import 'package:tadaa/features/addPost_page/presentation/blocs/PostState.dart';
 import 'package:tadaa/features/profile_page/data/models/userModel.dart';
 import 'package:tadaa/features/profile_page/domain/repositories/profileRepository.dart';
-import 'package:tadaa/features/profile_page/presentation/blocs/profile_bloc.dart';
-import 'package:tadaa/features/profile_page/presentation/blocs/profile_event.dart';
-import 'package:tadaa/features/profile_page/presentation/blocs/profile_state.dart';
 import 'package:tadaa/features/user/userInfo.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
@@ -93,23 +90,33 @@ class _PublicationPageState extends State<PublicationPage> {
         child: BlocListener<PostBloc, PostState>(
           listener: (context, state) {
             if (state is PostLoading) {
-              _showLoadingDialog(context);
+             // _showLoadingDialog(context);
+             CircularProgressIndicator();
             } else if (state is PostCreateSuccess) {
-              _dismissLoadingDialog();
+               Navigator.pop(context);
+              //_dismissLoadingDialog();
               BlocProvider.of<PostBloc>(context).add(FetchAllPostsEvent());
-              Navigator.of(context).pop(); 
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Post created Successfully!')),
               );
-              Navigator.of(context).pop(); 
+              /*Navigator.of(context).pop(); 
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Post created Successfully!')),
+              );
+              Navigator.of(context).pop(); */
             } else if (state is PostUpdateSuccess) {
-              _dismissLoadingDialog();
+              Navigator.pop(context);
               BlocProvider.of<PostBloc>(context).add(FetchAllPostsEvent());
-              Navigator.of(context).pop(); 
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Post created Successfully!')),
+              );
+              //_dismissLoadingDialog();
+              BlocProvider.of<PostBloc>(context).add(FetchAllPostsEvent());
+              /*Navigator.of(context).pop(); 
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Post updated Successfully!')),
               );
-              Navigator.of(context).pop(); 
+              Navigator.of(context).pop(); */
             }else if (state is PostError) {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
@@ -184,32 +191,30 @@ class _PublicationPageState extends State<PublicationPage> {
                             Text(
                               '$username $lastname', // Info of user who created the post
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           ],
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10), // Add some spacing
-                // Caption Input
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: TextField(
-                    controller: captionController,
-                    decoration: InputDecoration(
-                      hintText: 'Write a caption...',
-                      border: InputBorder.none,
-                    ),
-                    maxLines: null, // Allow multiple lines
-                    textAlignVertical: TextAlignVertical.top, // Start from top
-                  ),
-                ),
-              ],
-            ),
-          ),
-        
-  
+                        ),
+                           SizedBox(height: 10), // Add some spacing
+                            // Caption Input
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: TextField(
+                                controller: captionController,
+                                decoration: InputDecoration(
+                                  hintText: 'Write a caption...',
+                                  border: InputBorder.none,
+                                ),
+                                maxLines: null, // Allow multiple lines
+                                textAlignVertical: TextAlignVertical.top, // Start from top
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                         const Divider(),
                         if (imageFile != null || existingImageUrl != null)
                           Padding(
@@ -327,12 +332,12 @@ class _PublicationPageState extends State<PublicationPage> {
                         },),
                         const SizedBox(width: 15),
                         
-                        GestureDetector(
+                        /*GestureDetector(
                           onTap: () {
                             BottomModalSheet();
                           },
                           child: const Icon(Icons.more_horiz),
-                        ),
+                        ),*/
                       ],
                     ),
                      ValueListenableBuilder<bool>(
@@ -348,7 +353,6 @@ class _PublicationPageState extends State<PublicationPage> {
                             );
                             return;
                           }
-
                           final shouldRemoveImage = imageFile == null && existingImageUrl == null;
                           BlocProvider.of<PostBloc>(context).add(
                             widget.initialPost == null
@@ -382,7 +386,9 @@ class _PublicationPageState extends State<PublicationPage> {
                                     ),
                                     imageFile: imageFile,
                                   ),
+                                 
                           );
+                           //Navigator.pop(context);
                         }
                       : null, // Disable button if not enabled
                   child: Text(
@@ -394,8 +400,10 @@ class _PublicationPageState extends State<PublicationPage> {
                     ),
                   ),
                 );
+                
               },
             ),
+           
                  ],
                   
                 ),
@@ -409,7 +417,7 @@ class _PublicationPageState extends State<PublicationPage> {
     );
   }
 
-  void _showLoadingDialog(BuildContext context) {
+  /*void _showLoadingDialog(BuildContext context) {
     _dialogCompleter = Completer<void>();
 
     showDialog(
@@ -433,10 +441,10 @@ class _PublicationPageState extends State<PublicationPage> {
     } else {
       Navigator.of(context, rootNavigator: true).pop();
     }
-  }
-
+  }*/
+   
   void getImage({required ImageSource source}) async {
-    final file = await ImagePicker().pickImage(source: source);
+    final file = await ImagePicker().pickImage(source: source);   
     if (file?.path != null) {
       setState(() {
         imageFile = File(file!.path);
@@ -446,7 +454,7 @@ class _PublicationPageState extends State<PublicationPage> {
     }
   }
 
-  void BottomModalSheet() {
+ void BottomModalSheet() {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -515,7 +523,7 @@ class _PublicationPageState extends State<PublicationPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Select tagged users",
+                  "Select users",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 10),

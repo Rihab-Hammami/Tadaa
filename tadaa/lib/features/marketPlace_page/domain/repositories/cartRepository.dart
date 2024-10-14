@@ -46,6 +46,7 @@ class CartRepository {
     return getTotalAmount() <= userPoints;
   }
  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
   Future<void> savePurchasedProducts(
     List<ProductModel> products, Map<ProductModel, int> quantities, String userId) async {
   try {
@@ -60,4 +61,21 @@ class CartRepository {
   }
 }
 
+ Future<List<Map<String, dynamic>>> fetchPurchases(String userId) async {
+    try {
+      // Fetch the purchases collection from Firestore for the current user
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('purchases')
+          .orderBy('purchasedAt', descending: true)
+          .get();
+
+      // Extract data from each purchase document
+      print('Purchases fetched: ${snapshot.docs.length}');
+      return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    } catch (e) {
+      throw Exception("Error fetching purchases: $e");
+    }
+  }
 }

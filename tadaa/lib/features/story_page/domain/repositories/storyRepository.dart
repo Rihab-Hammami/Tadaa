@@ -162,6 +162,46 @@ class StoryRepository {
       throw Exception('Error viewing story: $e');
     }
   }
+  Future<void> expireStories() async {
+    try {
+      // Get the current time
+      DateTime now = DateTime.now();
+
+      // Query all stories where the createdAt timestamp is older than 24 hours
+      QuerySnapshot expiredStories = await _firebaseFirestore
+          .collection('stories')
+          .where('createdAt', isLessThan: now.subtract(Duration(hours: 24)))
+          .get();
+
+      // Loop through each story and delete it
+      for (var doc in expiredStories.docs) {
+        await _firebaseFirestore..collection('stories').doc(doc.id).delete();
+      }
+
+      print('Expired stories successfully deleted.');
+    } catch (e) {
+      print('Error deleting expired stories: $e');
+    }
+  }
+
+  Future<void> deleteStory(String storyId, String? mediaUrl) async {
+  try {
+    // Delete story document from Firestore
+    await _firebaseFirestore.collection('stories').doc(storyId).delete();
+
+    // If the story has media (an image), delete it from Firebase Storage
+    if (mediaUrl != null && mediaUrl.isNotEmpty) {
+      final storageRef = _firebaseStorage.refFromURL(mediaUrl);
+      await storageRef.delete();
+    }
+  } catch (e) {
+    throw Exception('Error deleting story: $e');
+  }
+}
+ 
+ 
+
+
 
 }
   

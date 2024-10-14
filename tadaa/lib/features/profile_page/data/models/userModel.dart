@@ -9,7 +9,7 @@ class UserModel {
   final String role;
   final String? profilePicture;
   final int points;  // New attribute
-
+  
   UserModel({
     required this.uid,
     required this.username,
@@ -51,7 +51,7 @@ class UserModel {
       'aboutMe': aboutMe,
       'role': role,
       'profilePicture': profilePicture,
-      'points': points,  // Include points
+      'points': points,  
     };
   }
 

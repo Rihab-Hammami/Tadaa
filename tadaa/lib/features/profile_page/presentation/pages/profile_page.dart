@@ -12,6 +12,7 @@ import 'package:tadaa/features/profile_page/presentation/blocs/profile_bloc.dart
 import 'package:tadaa/features/profile_page/presentation/blocs/profile_event.dart';
 import 'package:tadaa/features/profile_page/presentation/blocs/profile_state.dart';
 import 'package:tadaa/features/profile_page/presentation/widgets/aboutTabView.dart';
+import 'package:tadaa/features/profile_page/presentation/widgets/rewardsTabView.dart';
 import 'package:tadaa/features/profile_page/presentation/widgets/timeLineTabView.dart';
 import 'package:tadaa/features/user/userInfo.dart';
 import 'package:tadaa/features/wallet_page/domain/repository/walletRepository.dart';
@@ -49,13 +50,14 @@ class _ProfilePageState extends State<ProfilePage>
 
   @override
   void initState() {
-    tabController = TabController(length: 2, vsync: this);
+    tabController = TabController(length: 3, vsync: this);
     _fetchUserId();
 postRepository = PostRepository(
   walletRepository: walletRepository,
   profileBloc: BlocProvider.of<ProfileBloc>(context),
   notificationRepository: notificationRepository, // Add the notification repository
-);     super.initState();
+);     
+super.initState();
   }
 
   @override
@@ -175,6 +177,7 @@ postRepository = PostRepository(
               tabs: [
                 _buildTab('Timeline', 0),
                 _buildTab('About', 1),
+                _buildTab('Rewards', 2),
               ],
               indicatorColor: Color(0xff28BAE8),
               onTap: (index) {
@@ -205,6 +208,8 @@ postRepository = PostRepository(
                       context.read<ProfileBloc>().add(UpdateBirthday(newDate));
                     },
                 ),
+                // Center(child: Text('Rewards View Placeholder')),
+                RewardsWidget(),
                 
               ],
             ),

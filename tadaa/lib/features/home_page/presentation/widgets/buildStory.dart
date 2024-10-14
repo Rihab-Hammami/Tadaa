@@ -5,11 +5,8 @@ import 'package:tadaa/features/profile_page/data/models/userModel.dart';
 import 'package:tadaa/features/profile_page/presentation/blocs/profile_bloc.dart';
 import 'package:tadaa/features/story_page/data/models/storyModel.dart';
 import 'package:tadaa/features/story_page/domain/repositories/storyRepository.dart';
-import 'package:tadaa/features/story_page/presentation/pages/StoryPage.dart';
-import 'package:tadaa/features/story_page/presentation/pages/storyView.dart';
 import 'package:tadaa/features/story_page/presentation/pages/story_item.dart';
 import 'package:tadaa/features/wallet_page/domain/repository/walletRepository.dart';
-import 'package:tadaa/models/user.dart';
 import 'package:tadaa/features/profile_page/domain/repositories/profileRepository.dart';
 
 class BuildStory extends StatefulWidget {
@@ -99,6 +96,7 @@ class _BuildStoryState extends State<BuildStory> with TickerProviderStateMixin {
                   itemBuilder: (context, index) {
                     final userId = _userStories.keys.elementAt(index);
                     final stories = _userStories[userId]!;
+                    
                     final user = _users[userId];
                      PageController controller = PageController();
                     if (user == null) {
@@ -110,16 +108,13 @@ class _BuildStoryState extends State<BuildStory> with TickerProviderStateMixin {
                           context,
                           MaterialPageRoute(
                             builder: (context) => StoryItemWidget(
-                  
-                  stories: stories,
-                  currentUserId: userId,
-                  onClose: () {
-                    Navigator.pop(context);
-                  },
+                
+                            stories: stories,
+                            currentUserId: userId,
+                            onClose: () {
+                              Navigator.pop(context);
+                            },
                  
-                  
-                  
-                  
                           ),
                           ),
                         );
@@ -144,19 +139,19 @@ class _BuildStoryState extends State<BuildStory> with TickerProviderStateMixin {
                               height: 160,
                             ),
                             Positioned(
-                              bottom: 3,
-                              left: 3,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
+                              top: 4,
+                              left: 5,
+                              child: CircleAvatar(
                                     backgroundImage: user.profilePicture != null
                                         ? NetworkImage(user.profilePicture!)
                                         : AssetImage('assets/images/profile.jpg') as ImageProvider,
                                     radius: 12,
                                   ),
-                                  SizedBox(width: 2),
-                                  Container(
+                            ),
+                            Positioned(
+                              bottom: 3,
+                              left: 5,
+                              child:  Container(
                                     constraints: BoxConstraints(maxWidth: 100),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,9 +166,7 @@ class _BuildStoryState extends State<BuildStory> with TickerProviderStateMixin {
                                       ],
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
+                            )
                           ],
                         ),
                       ),

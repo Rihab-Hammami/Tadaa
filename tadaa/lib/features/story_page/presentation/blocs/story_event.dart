@@ -40,3 +40,12 @@ class ViewStoryEvent extends StoryEvent {
 }
 
 
+class DeleteStoryEvent extends StoryEvent {
+  final String storyId;
+  final String? mediaUrl;  // Media URL if the story contains media
+
+  const DeleteStoryEvent({required this.storyId, this.mediaUrl});
+
+  @override
+  List<Object?> get props => [storyId, mediaUrl];
+}
