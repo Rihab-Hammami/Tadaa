@@ -3,12 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tadaa/core/utils/app_colors.dart';
 import 'package:tadaa/features/addPost_page/presentation/pages/addPost.dart';
+import 'package:tadaa/features/directory_page/presentation/pages/directory_page.dart';
 import 'package:tadaa/features/home_page/presentation/pages/home_page.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/button_widget.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/pages/marketPlacePage.dart';
 import 'package:tadaa/features/notification_page/presentation/pages/notification.dart';
 import 'package:tadaa/features/profile_page/presentation/pages/profile_page.dart';
-import 'package:tadaa/features/profile_page/presentation/pages/profile_screen.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -44,7 +44,7 @@ class _NavBarState extends State<NavBar> {
     _getCurrentUser(); 
     _pages = [
       homeScreen,
-      notification(),
+      DirectoryPage(),
       MarketPlacePage(),
       ProfilePage(uid: uid,),
     ];
@@ -124,7 +124,7 @@ class _NavBarState extends State<NavBar> {
                   _navigateTo(1);
                 },
                 child: Icon(
-                  Icons.notifications,
+                  Icons.people,
                   size: 35,
                   color: _selectedIndex == 1 ? AppColors.bleu : Color(0xFF0F1245),
                 ),

@@ -74,17 +74,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       }
     });
   
-    on<FetchAllUsers>((event, emit) async {
-      emit(ProfileLoading());
-      try {
-        final users = await profileRepository.getAllUsers();
-        emit(UsersLoaded(users));
-      } catch (e) {
-        emit(ProfileError(e.toString()));
-      }
-    });
-    
-    
+   
 
   }
 }

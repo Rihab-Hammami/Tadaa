@@ -72,14 +72,7 @@ class DeletePostEvent extends PostEvent {
   List<Object?> get props => [postId];
 }
 
-class FetchPostsByUserIdEvent extends PostEvent {
-  final String userId;
 
-  FetchPostsByUserIdEvent(this.userId);
-
-  @override
-  List<Object?> get props => [userId];
-}
 class UpdateCommentEvent extends PostEvent {
   final String postId;       
   final String commentId;    

@@ -14,6 +14,7 @@ import 'package:tadaa/features/home_page/presentation/widgets/PostTypes/post.dar
 import 'package:tadaa/features/home_page/presentation/widgets/PostTypes/simple_Post_Widget.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/buildStory.dart';
 import 'package:tadaa/features/notification_page/domain/notificationRepository.dart';
+import 'package:tadaa/features/notification_page/presentation/pages/notification.dart';
 import 'package:tadaa/features/profile_page/domain/repositories/profileRepository.dart';
 import 'package:tadaa/features/profile_page/presentation/blocs/profile_bloc.dart';
 import 'package:tadaa/features/profile_page/presentation/blocs/profile_event.dart';
@@ -147,6 +148,20 @@ void _fetchStories() {
             ],
           ),
           actions: [
+            GestureDetector(
+              onTap: (){
+                 Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => notification()),
+                );
+              },
+              child: Icon(
+                Icons.notifications,
+                size: 35,
+                color: Color(0xFF0F1245),
+                ),
+            ),
+              const SizedBox(width: 10),
             Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: Container(
@@ -193,10 +208,11 @@ void _fetchStories() {
                       }
                     },
                   ),
+                  
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

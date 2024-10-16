@@ -39,13 +39,6 @@ class PostFetchSuccess extends PostState {
   @override
   List<Object?> get props => [posts];
 }
-class PostUserFetchSuccess extends PostState {
-  final List<PostModel> posts;
-
-  PostUserFetchSuccess(this.posts);
-   @override
-  List<Object?> get props => [posts];
-}
 
 
 class CommentAddSuccess extends PostState {}

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:tadaa/features/addPost_page/domain/repositories/post_repository.dart';
 import 'package:tadaa/features/addPost_page/presentation/blocs/PostBloc.dart';
+import 'package:tadaa/features/directory_page/presentation/blocs/users_bloc.dart';
 import 'package:tadaa/features/marketPlace_page/domain/repositories/cartRepository.dart';
 import 'package:tadaa/features/marketPlace_page/domain/repositories/productRepository.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/blocs/cart_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:tadaa/features/notification_page/domain/notificationRepository.d
 import 'package:tadaa/features/notification_page/presentation/blocs/notification_bloc.dart';
 import 'package:tadaa/features/profile_page/domain/repositories/profileRepository.dart';
 import 'package:tadaa/features/profile_page/presentation/blocs/profile_bloc.dart';
+import 'package:tadaa/features/profile_page/presentation/blocs/userPost_bloc.dart';
 import 'package:tadaa/features/sign_up_screen/data/data_sources/realm_api.dart.dart';
 import 'package:tadaa/features/sign_up_screen/data/repositories_impl/realm_repository_impl.dart';
 import 'package:tadaa/features/sign_up_screen/domain/repositories/realm_repository.dart';
@@ -71,6 +73,10 @@ void main() async {
         BlocProvider(
           create: (context) => ProfileBloc(context.read<ProfileRepository>()),
         ), 
+        BlocProvider<UserBloc>(
+      create: (context) => UserBloc(context.read<ProfileRepository>()),
+    ),
+    
          Provider<WalletRepository>(
       create: (_) => WalletRepository(), // Ensure you have this provider
     ),
@@ -83,6 +89,9 @@ void main() async {
         profileBloc: context.read<ProfileBloc>(),
         notificationRepository: context.read<NotificationRepository>()
         ), 
+    ),
+    BlocProvider<UserPostBloc>(
+      create: (context) => UserPostBloc(context.read<PostRepository>()),
     ),
 
     Provider<CartRepository>(

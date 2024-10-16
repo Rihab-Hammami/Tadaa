@@ -35,14 +35,13 @@ class ProfilePictureUpdated extends ProfileState {
 
   ProfilePictureUpdated(this.profilePictureUrl);
 }
-
+/*class UsersLoading extends ProfileState {}
 class UsersLoaded extends ProfileState {
   final List<UserModel> users;
 
   UsersLoaded(this.users);
-}
+}*/
 class PostUserFetchSuccess extends ProfileState{
   final List<PostModel> posts;
-
   PostUserFetchSuccess(this.posts);
 }

@@ -28,7 +28,7 @@ class _notificationState extends State<notification> {
         appBar: AppBar(
           title:
          Text(
-          'Notification',
+          'Notifications',
           style: 
           TextStyle(
             fontWeight: FontWeight.bold),

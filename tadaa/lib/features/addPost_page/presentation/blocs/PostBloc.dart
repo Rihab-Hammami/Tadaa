@@ -164,15 +164,7 @@ PostBloc(this._postRepository, this._walletRepository) : super(PostInitial()) {
 
 
 
-  on<FetchPostsByUserIdEvent>((event, emit) async {
-  emit(PostLoading());
-  try {
-    final posts = await _postRepository.fetchPostsByUserId(event.userId);
-    emit(PostUserFetchSuccess(posts));
-  } catch (e) {
-    emit(PostError('Failed to fetch posts: $e'));
-  }
-});
+ 
 
 
  

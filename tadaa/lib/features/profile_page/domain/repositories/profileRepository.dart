@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tadaa/features/addPost_page/data/models/Post.dart';
 import 'package:tadaa/features/profile_page/data/models/userModel.dart';
 
 class ProfileRepository {

@@ -25,5 +25,5 @@ class UpdateProfilePicture extends ProfileEvent {
   UpdateProfilePicture(this.profilePictureUrl);
 
 }
-class FetchAllUsers extends ProfileEvent {}
+//class FetchAllUsers extends ProfileEvent {}
 

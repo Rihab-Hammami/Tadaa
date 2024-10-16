@@ -396,6 +396,7 @@ Future<List<PostModel>> fetchPostsByUserId(String userId) async {
       .map((doc) => PostModel.fromFirestore(doc.data()))
       .toList();
 }
+
 Future<String> getPostOwnerId(String postId) async {
   try {
     // Fetch the post document

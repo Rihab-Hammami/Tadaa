@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tadaa/features/addPost_page/presentation/blocs/PostBloc.dart';
-import 'package:tadaa/features/addPost_page/presentation/blocs/PostEvent.dart';
-import 'package:tadaa/features/addPost_page/presentation/blocs/PostState.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/PostTypes/post.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/PostTypes/simple_Post_Widget.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/PostTypes/celebration_post_widget.dart';
 import 'package:tadaa/features/profile_page/domain/repositories/profileRepository.dart';
 import 'package:tadaa/features/addPost_page/domain/repositories/post_repository.dart';
+import 'package:tadaa/features/profile_page/presentation/blocs/userPost_bloc.dart';
+import 'package:tadaa/features/profile_page/presentation/blocs/userPost_event.dart';
+import 'package:tadaa/features/profile_page/presentation/blocs/userPost_state.dart';
 import 'package:tadaa/models/celebrationCat%C3%A9gorie.dart';
 
 class TimelineWidget extends StatefulWidget {
@@ -33,20 +33,18 @@ class _TimelineWidgetState extends State<TimelineWidget> {
   }
   // Fetch posts for the specific user
   void _fetchUserPosts() {
-    final postBloc = BlocProvider.of<PostBloc>(context);
-    postBloc.add(FetchPostsByUserIdEvent(widget.userId)); 
+    final userPostBloc = BlocProvider.of<UserPostBloc>(context);
+    userPostBloc.add(FetchUserPosts(widget.userId)); 
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PostBloc, PostState>(
+    return BlocBuilder<UserPostBloc, UserPostState>(
       builder: (context, state) {
-        if (state is PostLoading) {
+        if (state is UserPostLoading) {
           return Center(child: CircularProgressIndicator());
-        } else if (state is PostUserFetchSuccess) {
-          if (state.posts.isEmpty) {
-            return Center(child: Text("No posts to display."));
-          }
+        } else if (state is UserPostLoaded) {
+          
           return ListView.builder(
             itemCount: state.posts.length,
             itemBuilder: (context, index) {
@@ -86,7 +84,7 @@ class _TimelineWidgetState extends State<TimelineWidget> {
               }
             },
           );
-        } else if (state is PostError) {
+        } else if (state is UserPostError) {
           return Center(child: Text("Error fetching posts: ${state.message}"));
         } else {
           return Center(child: Text("No posts available."));

@@ -192,12 +192,12 @@ super.initState();
               controller: tabController,
               children: [
                 // Add your content for the tabs here
-                Center(child: Text('Timeline View Placeholder')),
-               /*TimelineWidget(
+                //Center(child: Text('Timeline View Placeholder')),
+               TimelineWidget(
                 userId: userId!, 
                 profileRepository: profileRepository, 
                 postRepository: postRepository,
-              ),*/
+              ),
                 AboutWidget(
                   bio: user.aboutMe ?? 'No bio available',
                   birthday: user.birthday ?? DateTime(2000, 1, 1),
