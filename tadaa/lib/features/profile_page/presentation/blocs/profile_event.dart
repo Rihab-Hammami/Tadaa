@@ -12,6 +12,11 @@ class UpdateBio extends ProfileEvent {
 
   UpdateBio(this.bio);
 }
+class UpdatePosition extends ProfileEvent {
+  final String position;
+
+  UpdatePosition(this.position);
+}
 
 class UpdateBirthday extends ProfileEvent {
   final DateTime birthday;

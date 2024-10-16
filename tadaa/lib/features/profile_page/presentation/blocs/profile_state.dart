@@ -23,6 +23,11 @@ class ProfileBioUpdated extends ProfileState {
 
   ProfileBioUpdated(this.bio);
 }
+class ProfilePositionUpdated extends ProfileState {
+  final String position;
+
+  ProfilePositionUpdated(this.position);
+}
 
 class ProfileBirthdayUpdated extends ProfileState {
   final DateTime birthday;

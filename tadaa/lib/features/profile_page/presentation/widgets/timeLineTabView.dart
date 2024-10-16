@@ -31,10 +31,11 @@ class _TimelineWidgetState extends State<TimelineWidget> {
     super.initState();
     _fetchUserPosts();
   }
+
   // Fetch posts for the specific user
   void _fetchUserPosts() {
     final userPostBloc = BlocProvider.of<UserPostBloc>(context);
-    userPostBloc.add(FetchUserPosts(widget.userId)); 
+    userPostBloc.add(FetchUserPosts(widget.userId));
   }
 
   @override
@@ -44,22 +45,26 @@ class _TimelineWidgetState extends State<TimelineWidget> {
         if (state is UserPostLoading) {
           return Center(child: CircularProgressIndicator());
         } else if (state is UserPostLoaded) {
-          
-          return ListView.builder(
+          return ListView.separated(
             itemCount: state.posts.length,
+            separatorBuilder: (context, index) => Container(
+              height: 3, // Height of the separator
+              color: Colors.grey[300], // Color of the separator
+            ),
             itemBuilder: (context, index) {
               final post = state.posts[index];
-              
+
               // Render different post types (Simple, Celebration, etc.)
+              Widget postWidget;
               if (post.type == 'simple') {
-                return SimplePostWidget(
+                postWidget = SimplePostWidget(
                   post: post,
                   profileRepository: widget.profileRepository,
                   postRepository: widget.postRepository,
                   currentUserId: widget.userId,
                 );
               } else if (post.type == 'celebration') {
-                return CelebrationPostWidget(
+                postWidget = CelebrationPostWidget(
                   post: post,
                   profileRepository: widget.profileRepository,
                   postRepository: widget.postRepository,
@@ -72,16 +77,22 @@ class _TimelineWidgetState extends State<TimelineWidget> {
                   ),
                 );
               } else if (post.type == 'appreciation') {
-                      return AppreciationPostWidget(
-                        post: post,
-                        profileRepository: widget.profileRepository,
-                        postRepository: widget.postRepository,
-                        currentUserId: widget.userId!,
-                      );
-                      }else {
+                postWidget = AppreciationPostWidget(
+                  post: post,
+                  profileRepository: widget.profileRepository,
+                  postRepository: widget.postRepository,
+                  currentUserId: widget.userId,
+                );
+              } else {
                 // Handle any other post types or unknown types
                 return const SizedBox.shrink();
               }
+
+              // Return padded post widget
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0), // Adjust padding
+                child: postWidget,
+              );
             },
           );
         } else if (state is UserPostError) {

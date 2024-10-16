@@ -2,24 +2,27 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tadaa/core/utils/session_manager.dart';
-import 'package:tadaa/features/logout/Presentation/widgets/logoutAlertDialog.dart';
 import 'package:tadaa/features/logout/Presentation/widgets/logout_widget.dart';
 import 'package:tadaa/features/profile_page/presentation/widgets/infoWidget.dart';
 import 'package:tadaa/features/profile_page/presentation/widgets/listTileWidget.dart';
+import 'package:tadaa/features/profile_page/presentation/widgets/positionWidget.dart';
 
 
 class AboutWidget extends StatefulWidget {
   final String bio;
   final DateTime birthday;
+  final String position;
   final ValueChanged<String> onBioUpdated;
   final ValueChanged<DateTime> onBirthdayUpdated;
-
+  final ValueChanged<String> onPositionUpdated;
   const AboutWidget({
     Key? key,
     required this.bio,
     required this.birthday,
     required this.onBioUpdated,
     required this.onBirthdayUpdated,
+    required this.onPositionUpdated, 
+    required this.position,
   }) : super(key: key);
 
   @override
@@ -28,6 +31,7 @@ class AboutWidget extends StatefulWidget {
 
 class _AboutWidgetState extends State<AboutWidget> {
   late String infoText;
+  late String positionText;
   late DateTime selectedDate;
   String? realm;
   String? refreshToken;
@@ -38,6 +42,7 @@ class _AboutWidgetState extends State<AboutWidget> {
     _loadSessionData();
     infoText = widget.bio;
     selectedDate = widget.birthday;
+    positionText=widget.position;
      
   }
    Future<void> _loadSessionData() async {
@@ -73,21 +78,7 @@ void _showLogoutConfirmationDialog(BuildContext context) {
       
     ).show();
   }
-  /*void _showLogoutConfirmationDialog(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false, 
-      builder: (BuildContext context) {
-        return LogoutConfirmationDialog(
-          onConfirm: () async {
-            if (realm != null && refreshToken != null) {
-              await logout(context, realm!, refreshToken!); 
-            }
-          },
-        );
-      },
-    );
-  }*/
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +138,42 @@ void _showLogoutConfirmationDialog(BuildContext context) {
           SizedBox(height: 8),
           ListTileWidget(
             child: ListTile(
+              title: const Text("Position",style: TextStyle(fontWeight: FontWeight.bold,color: Color(0xFF0F1245))),
+              subtitle:positionText.isNotEmpty
+                  ? Text(positionText)
+                  : Text("Enter your position"),
+              leading: Icon(Icons.business_center,color: Color(0xFF0F1245),),
+              trailing: GestureDetector(
+                onTap: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PositionWidget(
+                        initialText: positionText,
+                        onSubmit: (text) {
+                          setState(() {
+                            positionText = text;
+                          });
+                          widget.onPositionUpdated(text);
+                        },
+                      ),
+                    ),
+                  );
+
+                  if (result != null && result is String) {
+                    setState(() {
+                      positionText = result;
+                    });
+                    widget.onPositionUpdated(result);
+                  }
+                },
+                child: Icon(Icons.arrow_forward_ios_outlined, size: 20,color: Color(0xFF0F1245),),
+              ),
+            ),
+          ),
+          SizedBox(height: 8),
+          ListTileWidget(
+            child: ListTile(
               title: const Text("Logout",style: TextStyle(fontWeight: FontWeight.bold,color: Color(0xFF0F1245))),
               subtitle: Text("Tap to logout"),
               leading: Icon(Icons.logout,color: Color(0xFF0F1245),),
@@ -155,6 +182,7 @@ void _showLogoutConfirmationDialog(BuildContext context) {
               },
             ),
           ),
+           
         ],
       ),
     );

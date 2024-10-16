@@ -39,6 +39,7 @@ class _ProfilePageState extends State<ProfilePage>
   late final postRepository; 
   String? userId;
   late String currentBio;
+  late String currentPosition;
   late DateTime currentBirthday;
 
   Future<void> _fetchUserId() async {
@@ -93,6 +94,7 @@ super.initState();
               setState(() {
                 currentBio = state.user.aboutMe ?? 'No bio available';
                 currentBirthday = state.user.birthday ?? DateTime(2000, 1, 1);
+                currentPosition=state.user.position ?? '';
               });
             
               // Optionally handle any additional logic when profile is loaded
@@ -115,37 +117,59 @@ super.initState();
   // Update only the bio without reloading the entire profile
   return AboutWidget(
     bio: state.bio,
+    position: currentPosition,
     birthday: currentBirthday, // Preserve the existing birthday
     onBioUpdated: (newBio) {
-      // Dispatch event or update state accordingly
       BlocProvider.of<ProfileBloc>(context).add(UpdateBio(newBio));
     },
     onBirthdayUpdated: (newBirthday) {
       // Dispatch event or update state accordingly
       BlocProvider.of<ProfileBloc>(context).add(UpdateBirthday(newBirthday));
     },
+    onPositionUpdated: (newPosition) {
+      BlocProvider.of<ProfileBloc>(context).add(UpdatePosition(newPosition));
+    },
   );
-} else if (state is ProfileBirthdayUpdated) {
-  // Update only the birthday without reloading the entire profile
+} else if (state is ProfilePositionUpdated) {
+  // Update only the bio without reloading the entire profile
   return AboutWidget(
-    bio: currentBio, // Preserve the existing bio
+    bio: currentBio,
+    birthday: currentBirthday,
+    position: currentPosition, // Preserve the existing birthday
+    onBioUpdated: (newBio) {
+      BlocProvider.of<ProfileBloc>(context).add(UpdateBio(newBio));
+    },
+    onBirthdayUpdated: (newBirthday) {
+      // Dispatch event or update state accordingly
+      BlocProvider.of<ProfileBloc>(context).add(UpdateBirthday(newBirthday));
+    },
+    onPositionUpdated: (newPosition) {
+      BlocProvider.of<ProfileBloc>(context).add(UpdatePosition(newPosition));
+    },
+  );
+} 
+else if (state is ProfileBirthdayUpdated) {
+  return AboutWidget(
+    bio: currentBio, 
+    position: currentPosition,
     birthday: state.birthday,
     onBioUpdated: (newBio) {
-      // Dispatch event or update state accordingly
       BlocProvider.of<ProfileBloc>(context).add(UpdateBio(newBio));
     },
     onBirthdayUpdated: (newBirthday) {
-      // Dispatch event or update state accordingly
       BlocProvider.of<ProfileBloc>(context).add(UpdateBirthday(newBirthday));
     },
+    onPositionUpdated: (newPosition) {
+      BlocProvider.of<ProfileBloc>(context).add(UpdatePosition(newPosition));
+    },
   );
-}else {
+}
+else {
     // Fallback widget in case none of the states match
     return Center(
       child: Text('Unknown state. Please try again later.'),
     );
   }
-
   },
         ),
       ),
@@ -200,6 +224,7 @@ super.initState();
               ),
                 AboutWidget(
                   bio: user.aboutMe ?? 'No bio available',
+                  position: user.position ?? '',
                   birthday: user.birthday ?? DateTime(2000, 1, 1),
                   onBioUpdated: (newBio) {
                     context.read<ProfileBloc>().add(UpdateBio(newBio));
@@ -207,6 +232,9 @@ super.initState();
                    onBirthdayUpdated: (newDate) {
                       context.read<ProfileBloc>().add(UpdateBirthday(newDate));
                     },
+                    onPositionUpdated: (newPosition) {
+                    context.read<ProfileBloc>().add(UpdatePosition(newPosition));
+                  },
                 ),
                 // Center(child: Text('Rewards View Placeholder')),
                 RewardsWidget(),

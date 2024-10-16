@@ -37,6 +37,23 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         emit(ProfileError('Profile not loaded'));
       }
     });
+    on<UpdatePosition>((event, emit) async {
+      final currentState = state;
+      if (currentState is ProfileLoaded) {
+        try {
+          // Update the user's bio in the backend
+          UserModel updatedUser = currentState.user.copyWith(position: event.position);
+          await profileRepository.updateUserProfile(updatedUser);
+          
+          // Emit the updated profile with the new bio
+          emit(ProfileLoaded(updatedUser)); // Change back to ProfileLoaded with updated user
+        } catch (e) {
+          emit(ProfileError('Failed to update position'));
+        }
+      } else {
+        emit(ProfileError('Profile not loaded'));
+      }
+    });
 
     on<UpdateBirthday>((event, emit) async {
       final currentState = state;

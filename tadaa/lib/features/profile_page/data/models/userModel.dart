@@ -9,7 +9,7 @@ class UserModel {
   final String role;
   final String? profilePicture;
   final int points;  // New attribute
-  
+  final String? position;
   UserModel({
     required this.uid,
     required this.username,
@@ -18,9 +18,10 @@ class UserModel {
     required this.nationality,
     this.birthday,
     this.aboutMe,
+    this.position,
     required this.role,
     this.profilePicture,
-    this.points = 0, // Default points to 0
+    this.points = 0, 
   });
 
   factory UserModel.fromFirestore(Map<String, dynamic> data) {
@@ -34,6 +35,7 @@ class UserModel {
           ? DateTime.parse(data['birthday'])
           : null,
       aboutMe: data['aboutMe'],
+      position: data['position'],
       role: data['role'] ?? '',
       profilePicture: data['profilePicture'],
       points: data['points'] ?? 0,  // Parse points, default to 0 if not provided
@@ -49,6 +51,7 @@ class UserModel {
       'nationality': nationality,
       'birthday': birthday?.toIso8601String(),
       'aboutMe': aboutMe,
+      'position': position,
       'role': role,
       'profilePicture': profilePicture,
       'points': points,  
@@ -63,6 +66,7 @@ class UserModel {
     String? nationality,
     DateTime? birthday,
     String? aboutMe,
+    String? position,
     String? role,
     String? profilePicture,
     int? points,  // Add points to copyWith method
@@ -75,6 +79,7 @@ class UserModel {
       nationality: nationality ?? this.nationality,
       birthday: birthday ?? this.birthday,
       aboutMe: aboutMe ?? this.aboutMe,
+      position: position?? this.position,
       role: role ?? this.role,
       profilePicture: profilePicture ?? this.profilePicture,
       points: points ?? this.points,  // Allow copying of points
