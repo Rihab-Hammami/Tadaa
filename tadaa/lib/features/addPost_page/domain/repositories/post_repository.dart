@@ -219,41 +219,6 @@ Future<void> addComment(String postId, CommentModel comment, String uid) async {
     }
 }
 
-/*Future<void> addComment(String postId, CommentModel comment,String uid) async {
-    try {
-      final postRef = _firestore.collection('posts').doc(postId);
-    
-    // Fetch the post document
-    final postSnapshot = await postRef.get();
-
-    // Check if the post exists and retrieve the userId of the post owner
-    if (!postSnapshot.exists) {
-      throw Exception('Post not found');
-    }
-    
-    final postData = postSnapshot.data();
-    final postOwnerId = postData?['userId'];
-      // Get a reference to the post's "comments" subcollection
-      final commentRef = _firestore.collection('posts').doc(postId).collection('comments').doc();
-
-      // Set the new comment document with the provided data
-      await commentRef.set(comment.toFirestore());
-      await _walletRepository.addPoints(uid, 5, 'Comment Post', postId);
-      _profileBloc.add(FetchProfile(uid));
-         if (uid != postOwnerId) {
-      final notification = NotificationModel(
-        userId: uid, // Notify the post owner
-        actionType: 'comment',
-        actionId: postId,
-        date: DateTime.now(),
-        recipientId: postOwnerId,
-      );
-      await _notificationRepository.addNotification(notification);}
-    } catch (e) {
-      print('Error adding comment: $e');
-      throw Exception('Error adding comment');
-    }
-  }*/
 
  Future<List<CommentModel>> fetchComments(String postId) async {
     try {

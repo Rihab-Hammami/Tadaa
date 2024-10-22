@@ -20,7 +20,6 @@ import 'package:tadaa/features/profile_page/presentation/blocs/profile_bloc.dart
 import 'package:tadaa/features/profile_page/presentation/blocs/profile_event.dart';
 import 'package:tadaa/features/profile_page/presentation/blocs/profile_state.dart';
 import 'package:tadaa/features/story_page/data/models/storyModel.dart';
-import 'package:tadaa/features/story_page/domain/repositories/storyRepository.dart';
 import 'package:tadaa/features/story_page/presentation/blocs/story_bloc.dart';
 import 'package:tadaa/features/story_page/presentation/blocs/story_event.dart';
 import 'package:tadaa/features/story_page/presentation/blocs/story_state.dart';
@@ -324,7 +323,7 @@ void _fetchStories() {
                         post: post,
                         profileRepository: profileRepository,
                         postRepository: postRepository,
-                         currentUserId: _userId!,
+                        currentUserId: _userId!,
                       );
                     } else if (post.type == 'celebration') {
                       CelebrationCategory category = CelebrationCategory(
@@ -434,7 +433,7 @@ void _fetchStories() {
                   onPressed: () {
                     Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddStoryScreen()), // Use MaterialPageRoute
+                    MaterialPageRoute(builder: (context) => AddStoryScreen()), 
                   );
                   },
                   icon: Icon(Icons.add),

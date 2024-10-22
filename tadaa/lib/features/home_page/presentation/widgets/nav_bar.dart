@@ -7,7 +7,6 @@ import 'package:tadaa/features/directory_page/presentation/pages/directory_page.
 import 'package:tadaa/features/home_page/presentation/pages/home_page.dart';
 import 'package:tadaa/features/home_page/presentation/widgets/button_widget.dart';
 import 'package:tadaa/features/marketPlace_page/presentation/pages/marketPlacePage.dart';
-import 'package:tadaa/features/notification_page/presentation/pages/notification.dart';
 import 'package:tadaa/features/profile_page/presentation/pages/profile_page.dart';
 
 class NavBar extends StatefulWidget {
@@ -18,7 +17,10 @@ class NavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<NavBar> {
-    String uid = ''; // Initialize as an empty string
+  String? uid;
+  int _selectedIndex = 0;
+  List<Widget> _pages = [];
+  HomePage homeScreen = HomePage();
 
   void _getCurrentUser() {
     final FirebaseAuth auth = FirebaseAuth.instance;
@@ -26,28 +28,23 @@ class _NavBarState extends State<NavBar> {
 
     if (user != null) {
       setState(() {
-        uid = user.uid;  // Set the user id in state after initialization
+        uid = user.uid;
+        _pages = [
+          homeScreen,
+          DirectoryPage(),
+          MarketPlacePage(),
+          ProfilePage(uid: uid!), // Update _pages after setting uid
+        ];
       });
     } else {
-      // Handle if no user is logged in (you can navigate to a login page)
       print("No user is currently logged in");
     }
   }
-  int _selectedIndex = 0;
-  List<Widget> _pages = [];
-  //Home_Screen homeScreen = Home_Screen();
-  HomePage homeScreen = HomePage();
 
   @override
   void initState() {
     super.initState();
-    _getCurrentUser(); 
-    _pages = [
-      homeScreen,
-      DirectoryPage(),
-      MarketPlacePage(),
-      ProfilePage(uid: uid,),
-    ];
+    _getCurrentUser();
   }
 
   void _navigateTo(int index) {
@@ -56,8 +53,7 @@ class _NavBarState extends State<NavBar> {
     });
   }
 
-   void _addPost(String caption, File? imageFile) {
-    
+  void _addPost(String caption, File? imageFile) {
     setState(() {
       _selectedIndex = 0;
     });
@@ -68,7 +64,9 @@ class _NavBarState extends State<NavBar> {
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
-        children: _pages,
+        children: _pages.isEmpty
+            ? [Center(child: CircularProgressIndicator())] // Display loader while pages are being set
+            : _pages,
       ),
       floatingActionButton: ButtonNavBarWidget(
         child: Icon(
@@ -79,7 +77,7 @@ class _NavBarState extends State<NavBar> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddPost(onPost:_addPost),
+              builder: (context) => AddPost(onPost: _addPost),
             ),
           );
         },

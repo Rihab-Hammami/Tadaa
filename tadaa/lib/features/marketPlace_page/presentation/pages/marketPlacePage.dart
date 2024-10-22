@@ -29,12 +29,12 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
             },
           ),
           // Search bar
-          IconButton(
+          /*IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
               // Add your search functionality here
             },
-          ),
+          ),*/
         ],
       ),
       body: SingleChildScrollView(       

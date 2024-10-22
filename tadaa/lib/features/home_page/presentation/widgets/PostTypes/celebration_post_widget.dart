@@ -227,14 +227,21 @@ void _handleLikePost() async {
         child: Row(
           children: <Widget>[
             ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                user.profilePicture ?? 'https://via.placeholder.com/150',
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-              ),
-            ),
+                    borderRadius: BorderRadius.circular(8),
+                    child: user.profilePicture != null
+                        ? Image.network(
+                            user.profilePicture!,
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            "assets/images/profile.jpg", // Default profile image
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 8),

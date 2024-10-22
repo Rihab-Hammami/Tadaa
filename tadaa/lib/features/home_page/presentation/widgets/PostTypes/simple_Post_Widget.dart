@@ -1,5 +1,3 @@
-import 'package:comment_box/comment/comment.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -93,7 +91,7 @@ class _PostCardState extends State<SimplePostWidget> {
 
   void _showBottomSheet() {
      if (widget.post.userId != widget.currentUserId) {
-      return; // Don't show bottom sheet if not the owner of the post.
+      return; 
     }
     showModalBottomSheet(
       context: context,
@@ -205,14 +203,22 @@ class _PostCardState extends State<SimplePostWidget> {
                 child: Row(
                   children: <Widget>[
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        user.profilePicture ?? 'https://via.placeholder.com/150',
-                        height: 40,
-                        width: 40,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    child: user.profilePicture != null
+                        ? Image.network(
+                            user.profilePicture!,
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            "assets/images/profile.jpg", // Default profile image
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 8),

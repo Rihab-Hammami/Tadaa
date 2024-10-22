@@ -218,14 +218,20 @@ class _AppreciationPostWidgetState extends State<AppreciationPostWidget> {
                     width: 40,
                     child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    // Ensure the image has the same border radius
-                    child: Image.network(
-                        user.profilePicture ?? 'https://via.placeholder.com/150',
-                        height: 40,
-                        width: 40,
-                        fit: BoxFit.cover,
-                      ),
-                                  ),
+                    child: user.profilePicture != null
+                        ? Image.network(
+                            user.profilePicture!,
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            "assets/images/profile.jpg", // Default profile image
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
                   ),
                  Expanded(
                       child: Padding(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
+import 'package:tadaa/core/utils/app_colors.dart';
 import 'package:tadaa/features/addPost_page/domain/repositories/post_repository.dart';
 import 'package:tadaa/features/notification_page/domain/notificationRepository.dart';
 import 'package:tadaa/features/profile_page/data/models/userModel.dart';
@@ -27,7 +28,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin , AutomaticKeepAliveClientMixin {
+  bool get wantKeepAlive => false; 
   final double profileHeight = 144;
   late TabController tabController;
   int _selectedIndex = 0;
@@ -51,14 +53,14 @@ class _ProfilePageState extends State<ProfilePage>
 
   @override
   void initState() {
-    tabController = TabController(length: 3, vsync: this);
+  tabController = TabController(length: 3, vsync: this);
     _fetchUserId();
-postRepository = PostRepository(
+  postRepository = PostRepository(
   walletRepository: walletRepository,
   profileBloc: BlocProvider.of<ProfileBloc>(context),
   notificationRepository: notificationRepository, // Add the notification repository
-);     
-super.initState();
+  );     
+  super.initState();
   }
 
   @override
@@ -76,13 +78,19 @@ super.initState();
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); 
     return Scaffold(
+        extendBodyBehindAppBar: true, 
         appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text(
           'Profile',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white),
         ),
       ),
+      
       body: SingleChildScrollView(
         child: BlocConsumer<ProfileBloc, ProfileState>(
           listener: (context, state) {
@@ -97,24 +105,40 @@ super.initState();
                 currentPosition=state.user.position ?? '';
               });
             
-              // Optionally handle any additional logic when profile is loaded
             }
           },
          builder: (context, state) {
     if (state is ProfileLoading) {
       return Center(child: CircularProgressIndicator());
     } else if (state is ProfileLoaded) {
-      return Column(
+      return  Stack(
+  children: [
+    Container(
+      height: 315, 
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30.0),
+                      bottomRight: Radius.circular(30.0),
+                    ),
+            gradient: AppColors.primary_color,
+          ),
+    ),
+    Padding(
+      padding: const EdgeInsets.only(top:70),
+      child: Column(
         children: [
-          // Profile picture remains unchanged unless it's specifically updated
+          SizedBox(height: 10),
           buildProfileImage(state.user.profilePicture),
-          buildProfileContainer(state.user.name, state.user.email, state.user.role,state.user.points),
+          SizedBox(height: 20),
+          buildProfileContainer(state.user.name, state.user.email, state.user.role, state.user.points),
           SizedBox(height: 20),
           buildTabs(state.user),
         ],
-      );
+      ),
+    ),
+  ],
+);
     } else if (state is ProfileBioUpdated) {
-  // Update only the bio without reloading the entire profile
   return AboutWidget(
     bio: state.bio,
     position: currentPosition,
@@ -131,7 +155,6 @@ super.initState();
     },
   );
 } else if (state is ProfilePositionUpdated) {
-  // Update only the bio without reloading the entire profile
   return AboutWidget(
     bio: currentBio,
     birthday: currentBirthday,
@@ -199,8 +222,8 @@ else {
             child: TabBar(
               controller: tabController,
               tabs: [
-                _buildTab('Timeline', 0),
-                _buildTab('About', 1),
+                 _buildTab('About', 0),
+                _buildTab('Timeline', 1),
                 _buildTab('Rewards', 2),
               ],
               indicatorColor: Color(0xff28BAE8),
@@ -215,13 +238,7 @@ else {
             child: TabBarView(
               controller: tabController,
               children: [
-                // Add your content for the tabs here
-                //Center(child: Text('Timeline View Placeholder')),
-               TimelineWidget(
-                userId: userId!, 
-                profileRepository: profileRepository, 
-                postRepository: postRepository,
-              ),
+               
                 AboutWidget(
                   bio: user.aboutMe ?? 'No bio available',
                   position: user.position ?? '',
@@ -236,6 +253,12 @@ else {
                     context.read<ProfileBloc>().add(UpdatePosition(newPosition));
                   },
                 ),
+                TimelineWidget(
+                userId: userId!, 
+                profileRepository: profileRepository, 
+                postRepository: postRepository,
+                currentUserId: userId!,
+              ),
                 // Center(child: Text('Rewards View Placeholder')),
                 RewardsWidget(),
                 
@@ -315,47 +338,34 @@ else {
   }
 
   Widget buildProfileImage(String? profilePictureUrl) {
-    return Stack(
-      alignment: Alignment.topRight,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: imageFile != null
-              ? Image.file(
-                  imageFile!,
-                  width: profileHeight,
-                  height: profileHeight,
-                  fit: BoxFit.cover,
-                )
-              : (profilePictureUrl != null
-                  ? Image.network(
-                      profilePictureUrl,
-                      width: profileHeight,
-                      height: profileHeight,
-                      fit: BoxFit.cover,
-                    )
-                  : Image.asset(
-                      "assets/images/profile.jpg", // Default profile image
-                      width: profileHeight,
-                      height: profileHeight,
-                      fit: BoxFit.cover,
-                    )),
-        ),
-        Positioned(
-          top: 4,
-          right: 4,
-          child: GestureDetector(
-            onTap: _pickImage,
-            child: Icon(
-              Icons.edit,
-              color: Colors.blue,
-              size: 20,
-            ),
+  return Stack(
+    alignment: Alignment.topRight,
+    children: [
+      CircleAvatar(
+        radius: 70,
+        backgroundColor: Colors.grey[200],
+        backgroundImage: imageFile != null
+            ? FileImage(imageFile!)
+            : (profilePictureUrl != null
+                ? NetworkImage(profilePictureUrl)
+                : AssetImage("assets/images/profile.jpg")) as ImageProvider,
+      ),
+      Positioned(
+        bottom: 8,
+        right: 15,
+        child: GestureDetector(
+          onTap: _pickImage,
+          child: Icon(
+            Icons.camera_alt_sharp,
+            color: Colors.white,
+            size: 20,
           ),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
+
 
   Widget _buildTab(String text, int index) {
     bool isSelected = index == _selectedIndex;
@@ -374,25 +384,53 @@ else {
     );
   }
 
-  Future<void> _pickImage() async {
-  final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+Future<void> _pickImage() async {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: Icon(Icons.photo_camera),
+              title: Text('Camera'),
+              onTap: () {
+                _pickImageFromSource(ImageSource.camera);
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text('Gallery'),
+              onTap: () {
+                _pickImageFromSource(ImageSource.gallery);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+Future<void> _pickImageFromSource(ImageSource source) async {
+  final pickedFile = await ImagePicker().pickImage(source: source);
   if (pickedFile != null) {
     setState(() {
       imageFile = File(pickedFile.path);
     });
 
     try {
-      // Upload the image and get the new image URL
       final newImageUrl = await _uploadImage(File(pickedFile.path));
       print('New image URL: $newImageUrl');
-
-      // Dispatch the event to update the profile picture URL
       BlocProvider.of<ProfileBloc>(context).add(UpdateProfilePicture(newImageUrl));
     } catch (e) {
       print('Error uploading image or updating profile: $e');
     }
   }
 }
+  
 
 
 Future<String> _uploadImage(File imageFile) async {

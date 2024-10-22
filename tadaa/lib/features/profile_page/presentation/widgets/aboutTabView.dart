@@ -204,5 +204,4 @@ void _showLogoutConfirmationDialog(BuildContext context) {
     }
   }
 
-  
 }
