@@ -223,7 +223,6 @@ Future<void> _pickImage() async {
                       ),
                       child: Text('Add Story'),
                     ),
-
                   ],
                 ),
               ),

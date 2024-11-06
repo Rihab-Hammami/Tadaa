@@ -83,11 +83,13 @@ class _ProfilePageState extends State<ProfilePage>
         extendBodyBehindAppBar: true, 
         appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text(
-          'Profile',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white),
+        title: Center(
+          child: Text(
+            'Profile',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
+          ),
         ),
       ),
       
@@ -222,7 +224,7 @@ else {
             child: TabBar(
               controller: tabController,
               tabs: [
-                 _buildTab('About', 0),
+                _buildTab('About', 0),
                 _buildTab('Timeline', 1),
                 _buildTab('Rewards', 2),
               ],
@@ -238,7 +240,6 @@ else {
             child: TabBarView(
               controller: tabController,
               children: [
-               
                 AboutWidget(
                   bio: user.aboutMe ?? 'No bio available',
                   position: user.position ?? '',
