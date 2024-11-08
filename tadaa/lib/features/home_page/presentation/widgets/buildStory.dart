@@ -11,8 +11,9 @@ import 'package:tadaa/features/profile_page/domain/repositories/profileRepositor
 
 class BuildStory extends StatefulWidget {
   final List<StoryModel> stories;
+  final String currentUserId; // Add the current user ID here
 
-  BuildStory({Key? key, required this.stories}) : super(key: key);
+  BuildStory({Key? key, required this.stories, required this.currentUserId}) : super(key: key);
 
   @override
   State<BuildStory> createState() => _BuildStoryState();
@@ -36,72 +37,82 @@ class _BuildStoryState extends State<BuildStory> {
     _fetchAllStories();
   }
 
-  Future<void> _fetchAllStories() async {
-    try {
-      final stories = await _storyRepository.fetchAllStories();
-      final Map<String, UserModel> users = {};
-      final Map<String, List<StoryModel>> groupedStories = {};
+Future<void> _fetchAllStories() async {
+  try {
+    final stories = await _storyRepository.fetchAllStories();
+    final Map<String, UserModel> users = {};
+    final Map<String, List<StoryModel>> groupedStories = {};
 
-      for (var story in stories) {
-        final user = await ProfileRepository().getUserProfile(story.userId);
-        users[story.userId] = user;
+    for (var story in stories) {
+      final user = await ProfileRepository().getUserProfile(story.userId);
+      users[story.userId] = user;
 
-        if (DateTime.now().difference(story.createdAt).inHours < 24) {
-          groupedStories.putIfAbsent(story.userId, () => []).add(story);
-        }
+      // Check if the story is less than 24 hours old
+      if (DateTime.now().difference(story.createdAt).inHours < 24) {
+        groupedStories.putIfAbsent(story.userId, () => []).add(story);
       }
-
-      setState(() {
-        _userStories = groupedStories;
-        _users = users;
-        _isLoading = false;
-      });
-    } catch (e) {
-      print('Error fetching stories or user profiles: $e');
-      setState(() {
-        _isLoading = false;
-      });
     }
-  }
 
-  // Move to the next user’s stories if available
- void _moveToNextUser() {
-  if (_currentUserIndex < _userStories.length - 1) {
-    setState(() {
-      _currentUserIndex++;
+    // Ensure the current user's stories are first
+    final Map<String, List<StoryModel>> orderedStories = {};
+    if (groupedStories.containsKey(widget.currentUserId)) {
+      orderedStories[widget.currentUserId] = groupedStories[widget.currentUserId]!;
+    }
+    // Add the rest of the stories, excluding the current user
+    groupedStories.forEach((userId, stories) {
+      if (userId != widget.currentUserId) {
+        orderedStories[userId] = stories;
+      }
     });
-    final nextUserId = _userStories.keys.elementAt(_currentUserIndex);
-    _openStoryPage(nextUserId);
-  } else {
-    // If this is the last user's stories, pop to the first route to exit completely
-    Navigator.of(context).popUntil((route) => route.isFirst);
+
+    setState(() {
+      _userStories = orderedStories;
+      _users = users;
+      _isLoading = false;
+    });
+  } catch (e) {
+    print('Error fetching stories or user profiles: $e');
+    setState(() {
+      _isLoading = false;
+    });
   }
 }
 
-void _openStoryPage(String userId) {
-  final stories = _userStories[userId]!;
-  final user = _users[userId]!;
 
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => StoryItemWidget(
-        stories: stories,
-        currentUserId: userId,
-        onClose: _moveToNextUser, // Pass method to move to the next user or exit
-        userName: user.name,
-        userProfilePicture: user.profilePicture!,
-      ),
-    ),
-  ).then((_) {
-    // Backup in case we return here on the last story
-    if (_currentUserIndex >= _userStories.length - 1) {
+
+  void _moveToNextUser() {
+    if (_currentUserIndex < _userStories.length - 1) {
+      setState(() {
+        _currentUserIndex++;
+      });
+      final nextUserId = _userStories.keys.elementAt(_currentUserIndex);
+      _openStoryPage(nextUserId);
+    } else {
       Navigator.of(context).popUntil((route) => route.isFirst);
     }
-  });
-}
+  }
 
+  void _openStoryPage(String userId) {
+    final stories = _userStories[userId]!;
+    final user = _users[userId]!;
 
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StoryItemWidget(
+          stories: stories,
+          currentUserId: widget.currentUserId, // Pass the logged-in user's ID here
+          onClose: _moveToNextUser,
+          userName: user.name,
+          userProfilePicture: user.profilePicture!,
+        ),
+      ),
+    ).then((_) {
+      if (_currentUserIndex >= _userStories.length - 1) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,8 +134,8 @@ void _openStoryPage(String userId) {
 
                     return GestureDetector(
                       onTap: () {
-                        _currentUserIndex = index; // Set the current user index
-                        _openStoryPage(userId); // Open the story viewer
+                        _currentUserIndex = index;
+                        _openStoryPage(userId);
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 3.0),
@@ -177,3 +188,4 @@ void _openStoryPage(String userId) {
               );
   }
 }
+

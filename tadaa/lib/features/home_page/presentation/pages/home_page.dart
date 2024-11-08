@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -296,7 +295,10 @@ void _fetchStories() {
                                 SizedBox(width: 5),
                                 Expanded(
                                   child: storyState.stories.isNotEmpty
-                                      ? BuildStory(stories: storyState.stories)
+                                      ? BuildStory(
+                                        stories: storyState.stories,
+                                        currentUserId: _userId!,
+                                      )
                                       : Center(child: Text('No stories available')),
                                 ),
                               ],

@@ -64,6 +64,21 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
       }
     });
 
+ on<LikeStoryEvent>((event, emit) async {
+      emit(StoryLoading()); // Emit loading state
+
+      try {
+        // Call the repository's likeStory method
+        await storyRepository.likeStory(event.storyId, event.userId);
+
+        // Emit success state after liking the story
+        emit(StoryLiked(storyId: event.storyId));
+      } catch (e) {
+        // Emit error state if something goes wrong
+        emit(StoryError(error: e.toString()));
+      }
+    });
+  
     on<DeleteStoryEvent>((event, emit) async {
   emit(StoryLoading()); // Emit loading state
 

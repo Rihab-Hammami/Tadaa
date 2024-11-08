@@ -39,6 +39,12 @@ class ViewStoryEvent extends StoryEvent {
   List<Object?> get props => [storyId, userId];
 }
 
+class LikeStoryEvent extends StoryEvent {
+  final String storyId;
+  final String userId;
+
+  LikeStoryEvent({required this.storyId, required this.userId});
+}
 
 class DeleteStoryEvent extends StoryEvent {
   final String storyId;

@@ -41,6 +41,11 @@ class StoryViewed extends StoryState {
   List<Object?> get props => [storyId];
 }
 
+class StoryLiked extends StoryState {
+  final String storyId;
+  StoryLiked({required this.storyId});
+}
+
 class StoryDeleted extends StoryState {
   final String storyId;
 

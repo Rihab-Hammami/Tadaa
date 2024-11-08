@@ -45,6 +45,9 @@ class _TimelineWidgetState extends State<TimelineWidget> {
         if (state is UserPostLoading) {
           return Center(child: CircularProgressIndicator());
         } else if (state is UserPostLoaded) {
+          if (state.posts.isEmpty) {
+            return Center(child: Text("No posts yet."));
+          }
           return ListView.separated(
             itemCount: state.posts.length,
             separatorBuilder: (context, index) => Container(

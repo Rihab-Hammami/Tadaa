@@ -189,7 +189,8 @@ Future<void> _pickImage() async {
                               expiresAt: DateTime.now().add(Duration(hours: 24)),
                               views: [],
                               type: 'moment',
-                              caption: _captionController.text, // Use the entered caption
+                              caption: _captionController.text, 
+                              likes: [], 
                             );
                             
                             // Dispatch the AddStoryEvent with the selected image and caption

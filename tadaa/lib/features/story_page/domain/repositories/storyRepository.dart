@@ -162,6 +162,40 @@ class StoryRepository {
       throw Exception('Error viewing story: $e');
     }
   }
+
+ Future<void> likeStory(String storyId, String userId) async {
+    try {
+      // Reference the specific story document
+      final storyDocRef = _firebaseFirestore.collection('stories').doc(storyId);
+
+      // Run a transaction to ensure atomicity
+      await _firebaseFirestore.runTransaction((transaction) async {
+        // Get the current story document
+        final storySnapshot = await transaction.get(storyDocRef);
+
+        if (!storySnapshot.exists) {
+          throw Exception('Story does not exist');
+        }
+
+        // Get the current likes
+        List<String> currentLikes = List<String>.from(storySnapshot.data()?['likes'] ?? []);
+
+        // Check if the user has already liked the story
+        if (!currentLikes.contains(userId)) {
+          // Add the user ID to the likes list
+          currentLikes.add(userId);
+
+          // Update the story document with the new likes list
+          transaction.update(storyDocRef, {'likes': currentLikes});
+        } else {
+          throw Exception('User has already liked this story');
+        }
+      });
+    } catch (e) {
+      throw Exception('Error liking story: $e');
+    }
+  }
+
   Future<void> expireStories() async {
     try {
       // Get the current time

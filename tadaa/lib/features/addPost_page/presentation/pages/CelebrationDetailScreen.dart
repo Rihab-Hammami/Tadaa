@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
-import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:tadaa/features/addPost_page/data/models/Post.dart';
 import 'package:tadaa/features/addPost_page/presentation/blocs/PostBloc.dart';
 import 'package:tadaa/features/addPost_page/presentation/blocs/PostEvent.dart';
@@ -44,6 +42,21 @@ class _CelebrationDetailScreenState extends State<CelebrationDetailScreen> {
     final users = await profileRepository.getAllUsers();
     return {for (var user in users) user.uid: user.name};
   }
+  Future<List<Map<String, String>>> _fetchAllUsersAsList() async {
+  final profileRepository = ProfileRepository();
+  final users = await profileRepository.getAllUsers();
+
+  // Map the users to a list of maps containing the desired fields
+  return users.map((user) {
+    return {
+      'uid': user.uid,
+      'name': user.name,
+      'profilePicture': user.profilePicture ?? '', // Provide a default if null
+    };
+  }).toList();
+}
+
+
   Future<void> _fetchUserId() async {
     final id = await UserInfo.getUserId();
     setState(() {
@@ -103,7 +116,82 @@ class _CelebrationDetailScreenState extends State<CelebrationDetailScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 SizedBox(height: 15),
-                 Padding(
+                Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 10),
+  child: GestureDetector(
+    onTap: () async {
+      // Fetch users and show the dialog when the user taps the Padding widget
+      final users = await _fetchAllUsersAsList(); // Assuming you have a function that fetches the list
+      await _showCustomDialog(context, users); // Show the custom dialog with the users
+    },
+    child: FutureBuilder<Map<String, String>>(
+      future: _fetchAllUsers(), // Keep this to fetch users if needed elsewhere
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Text('Error fetching users');
+        }
+
+        
+
+                   return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey, width: 1), // Add border
+                        borderRadius: BorderRadius.circular(10), // Rounded corners
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Row(
+                          children: [
+                            Icon(Icons.arrow_drop_down), // Dropdown arrow icon
+                            SizedBox(width: 8),
+                            Text("Select users"), // Display a text next to the dropdown icon
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+
+                        },
+                      ),
+                    ),
+                  ),
+                  if (taggedUsers.isNotEmpty) 
+                Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10,),
+              child: taggedUsers.isNotEmpty
+                  ? Row(
+                      children: [
+                        
+                        Flexible(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: taggedUsers.entries.map((entry) {
+                                return Chip(
+                                  label: Text(entry.value),
+                                  onDeleted: () {
+                                    setState(() {
+                                      taggedUsers.remove(entry.key);
+                                      
+                                    });
+                                  },
+                                  deleteIcon: Icon(Icons.cancel, size: 18),
+                                  deleteIconColor: Colors.red,
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Container(),
+            ),
+                /* Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 10),
                             child: FutureBuilder<Map<String, String>>(
                               future: _fetchAllUsers(),
@@ -120,70 +208,12 @@ class _CelebrationDetailScreenState extends State<CelebrationDetailScreen> {
                                 final multiSelectItems = filteredUsers
                                     .map((entry) => MultiSelectItem<String>(entry.key, entry.value))
                                     .toList();
-        
-                                return MultiSelectDialogField(
-                                  items: multiSelectItems,
-                                  title: Text("Select tagged users"),
-                                  selectedColor: Colors.blue,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: Colors.grey, width: 1.0),
-                                  ),
-                                  buttonText: Text("Select users"),
-                                  onConfirm: (results) {
-                                    setState(() {
-                                      taggedUsers = {for (var id in results) id: users[id]!};
-                                    });
-                                  },
-                                  initialValue: taggedUsers.keys.toList(),
-                                );
+                               final users = await _fetchAllUsersAsList();
+                                return _showCustomDialog(context, users)
                               },
                             ),
-                          ),
-             /* Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 12.0),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<User>(
-                      value: _selectedUser,
-                      onChanged: (User? newValue) {
-                        setState(() {
-                          _selectedUser = newValue;
-                        });
-                      },
-                      items: [
-                        DropdownMenuItem<User>(
-                          value: null,
-                          child: Text("Select person"), // Default text
-                        ),
-                        /*...users.map<DropdownMenuItem<User>>((User user) {
-                          return DropdownMenuItem<User>(
-                            value: user,
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.asset(
-                                    user.imgUrl,
-                                    width: 40,
-                                    height: 40,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Text(user.name),
-                              ],
-                            ),
-                          );
-                        }).toList(),*/
-                      ],
-                    ),
-                  ),
-                ),*/
+                          ),*/
+             
                 const SizedBox(height:15,),
                 Text(
                 widget.category.title,
@@ -205,18 +235,7 @@ class _CelebrationDetailScreenState extends State<CelebrationDetailScreen> {
                   ),
                 ),
               ),
-              /*SizedBox(height: 15),
-                Text("Your Message",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                SizedBox(height: 15,),
-                TextFormField(              
-                    maxLines: 4,
-                    decoration: InputDecoration(
-                      hintText: 'Enter your message',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),*/
+              
               SizedBox(height: 25),
              Center(
   child: SizedBox(
@@ -311,4 +330,173 @@ void _showLoadingDialog(BuildContext context) {
       Navigator.of(context, rootNavigator: true).pop();
     }
   }
+
+
+  Future<void> _showCustomDialog(BuildContext context, List<Map<String, String>> users) async {
+  // Filter out the current user (userId) from the list
+  final filteredUsers = users.where((user) => user['uid'] != userId).toList();
+
+  // Create a TextEditingController for the search input
+  TextEditingController searchController = TextEditingController();
+  List<Map<String, String>> displayedUsers = List.from(filteredUsers);
+
+  // Set to keep track of selected user IDs
+  Set<String> selectedUserIds = {};
+
+  // Function to filter users based on the search query
+  void _filterUsers(String query) {
+    if (query.isEmpty) {
+      displayedUsers = List.from(filteredUsers);
+    } else {
+      displayedUsers = filteredUsers.where((user) {
+        return user['name']!.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    }
+  }
+
+  await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      // StatefulBuilder to allow rebuilding the dialog
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)), // Rounded corners
+            elevation: 5,
+            backgroundColor: Colors.white,
+            child: Container(
+              padding: EdgeInsets.all(15),
+              width: 350,  // Set width to be consistent and not too wide
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // Allow content to adjust based on size
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  
+                  TextField(
+                    controller: searchController,
+                    onChanged: (query) {
+                      _filterUsers(query);
+                      setState(() {}); // Update the displayed list when search query changes
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      prefixIcon: Icon(Icons.search, color: Colors.grey),
+                      contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 15),
+
+                  // Display the "No results" message if there are no filtered users
+                  if (displayedUsers.isEmpty)
+                    Center(child: Text('No users found', style: TextStyle(color: Colors.grey))),
+                  // User list
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: ListBody(
+                        children: displayedUsers.map((user) {
+                          final profilePicture = user['profilePicture'] ?? '';
+                          final isSelected = selectedUserIds.contains(user['uid']);
+
+                          return Container(
+                            margin: EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: isSelected ? Colors.blue[50] : Colors.transparent, // Highlight selected item
+                             
+                            ),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage: profilePicture.isNotEmpty
+                                    ? NetworkImage(profilePicture)
+                                    : null,
+                                child: profilePicture.isEmpty
+                                    ? Icon(Icons.person, color: Colors.white)
+                                    : null,
+                              ),
+                              title: Text(
+                                user['name']!,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              trailing: isSelected
+                                  ? Icon(Icons.check_circle, color: Colors.blue) // Checkmark for selected
+                                  : Icon(Icons.radio_button_unchecked, color: Colors.grey), // Unchecked icon for non-selected
+                              onTap: () {
+                                setState(() {
+                                  if (isSelected) {
+                                    // Remove from selected users if already selected
+                                    selectedUserIds.remove(user['uid']);
+                                  } else {
+                                    // Add to selected users if not selected
+                                    selectedUserIds.add(user['uid']!);
+                                  }
+                                });
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+
+                 
+                  
+
+                  // Action buttons at the bottom
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          // Close the dialog without any changes
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // On confirm, return the selected users
+                          Navigator.of(context).pop(selectedUserIds.toList());
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.blueAccent,
+                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        child: Text(
+                          "Confirm",
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  ).then((selectedIds) {
+    // When the dialog closes, process the selected users (if any)
+    if (selectedIds != null && selectedIds.isNotEmpty) {
+      setState(() {
+        taggedUsers = {for (var id in selectedIds) id: users.firstWhere((user) => user['uid'] == id)['name']!};
+        
+      });
+    }
+  });
+}
   }

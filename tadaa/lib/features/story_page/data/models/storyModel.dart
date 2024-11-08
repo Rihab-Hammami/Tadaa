@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum MediaType { text,image, video }
+enum MediaType { text, image, video }
 
 class StoryModel {
   final String storyId;
@@ -12,7 +12,8 @@ class StoryModel {
   final List<String> views;
   final String type;  
   final String caption;
-
+  final List<String> likes;  // New likes field to store userIds who liked the story
+  
   StoryModel({
     required this.storyId,
     required this.userId,
@@ -23,6 +24,7 @@ class StoryModel {
     required this.views,
     required this.type,
     required this.caption,
+    required this.likes,  // Add likes parameter to constructor
   });
 
   // Factory method to create a StoryModel from Firestore DocumentSnapshot
@@ -35,10 +37,10 @@ class StoryModel {
       mediaType: MediaType.values[data['mediaType']], 
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       expiresAt: (data['expiresAt'] as Timestamp).toDate(),
-      views:List<String>.from(data['views'] ?? []),
+      views: List<String>.from(data['views'] ?? []),
       type: data['type'] ?? '',
-      caption: data['caption']??'',
-     
+      caption: data['caption'] ?? '',
+      likes: List<String>.from(data['likes'] ?? []),  // Handle likes
     );
   }
 
@@ -52,7 +54,8 @@ class StoryModel {
       'expiresAt': expiresAt,
       'views': views,
       'type': type, 
-      'caption':caption,
+      'caption': caption,
+      'likes': likes,  // Include likes in toFirestore method
     };
   }
 
@@ -64,9 +67,10 @@ class StoryModel {
     MediaType? mediaType,
     DateTime? createdAt,
     DateTime? expiresAt,
-     List<String>? views,
+    List<String>? views,
     String? type,
-    String? caption
+    String? caption,
+    List<String>? likes,  // Add likes parameter to copyWith method
   }) {
     return StoryModel(
       storyId: storyId ?? this.storyId,
@@ -77,7 +81,8 @@ class StoryModel {
       expiresAt: expiresAt ?? this.expiresAt,
       views: views ?? this.views,
       type: type ?? this.type,
-      caption:caption?? this.caption,
+      caption: caption ?? this.caption,
+      likes: likes ?? this.likes,  // Use likes in the copyWith method
     );
   }
 }

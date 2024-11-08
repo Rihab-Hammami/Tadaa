@@ -99,7 +99,6 @@ class _DirectoryDetailsPageState extends State<DirectoryDetailsPage> {
             tabs: [
               Tab(text: "Posts",),
               Tab(text: "Personal Info"),
-
             ],
             indicatorColor: Color(0xff28BAE8),
           ),

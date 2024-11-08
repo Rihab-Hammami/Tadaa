@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:story_view/story_view.dart';
+import 'package:tadaa/features/notification_page/domain/notificationRepository.dart';
+import 'package:tadaa/features/profile_page/presentation/blocs/profile_bloc.dart';
 import 'package:tadaa/features/story_page/data/models/storyModel.dart';
+import 'package:tadaa/features/story_page/domain/repositories/storyRepository.dart';
+import 'package:tadaa/features/story_page/presentation/blocs/story_bloc.dart';
+import 'package:tadaa/features/story_page/presentation/blocs/story_event.dart';
+import 'package:tadaa/features/wallet_page/domain/repository/walletRepository.dart';
 
 class StoryItemWidget extends StatefulWidget {
   final List<StoryModel> stories;
   final VoidCallback onClose;
   final String currentUserId;
-  final String userName; // User name for display
-  final String userProfilePicture; // User profile picture for display
+  final String userName;
+  final String userProfilePicture;
 
   const StoryItemWidget({
     Key? key,
     required this.stories,
     required this.onClose,
     required this.currentUserId,
-    required this.userName, // Required for displaying user info
-    required this.userProfilePicture, // Required for displaying user profile
+    required this.userName,
+    required this.userProfilePicture,
   }) : super(key: key);
 
   @override
@@ -24,12 +31,20 @@ class StoryItemWidget extends StatefulWidget {
 
 class _StoryItemWidgetState extends State<StoryItemWidget> {
   late StoryController _storyController;
-  int _currentStoryIndex = 0; // Keep track of the current story index
-
+  int _currentStoryIndex = 0;
+  late StoryRepository _storyRepository;
+  bool _isLiked= false;
   @override
   void initState() {
     super.initState();
     _storyController = StoryController();
+    _storyRepository = StoryRepository(
+      walletRepository: RepositoryProvider.of<WalletRepository>(context),
+      notificationRepository: RepositoryProvider.of<NotificationRepository>(context),
+      profileBloc: BlocProvider.of<ProfileBloc>(context),
+    );
+
+    _initiateStoryView(widget.stories[_currentStoryIndex]);
   }
 
   @override
@@ -40,12 +55,37 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
 
   void _moveToNextStory() {
     if (_currentStoryIndex < widget.stories.length - 1) {
+      // Move to the next story for the same user
       setState(() {
         _currentStoryIndex++;
       });
+      _initiateStoryView(widget.stories[_currentStoryIndex]);
     } else {
-      // Close the story view if all stories have been viewed
-      widget.onClose();
+      // No more stories for this user, close and move to next user
+      widget.onClose(); 
+    }
+  }
+
+ 
+  
+   void _onLikeStory() {
+    setState(() {
+      _isLiked = !_isLiked; // Toggle the local like state
+    });
+
+    // Dispatch the like event to the Bloc
+    BlocProvider.of<StoryBloc>(context).add(
+      LikeStoryEvent(
+        storyId: widget.stories[_currentStoryIndex].storyId,
+        userId: widget.currentUserId,
+      ),
+    );
+  }
+   Future<void> _initiateStoryView(StoryModel story) async {
+    try {
+      await _storyRepository.viewStory(story.storyId, widget.currentUserId);
+    } catch (e) {
+      print('Error marking story as viewed: $e');
     }
   }
 
@@ -79,16 +119,15 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
           controller: _storyController,
           onVerticalSwipeComplete: (direction) {
             if (direction == Direction.down) {
-              Navigator.pop(context); // Close the story when swiped down
+              Navigator.of(context).popUntil((route) => route.isFirst);
             }
           },
-          onComplete: () {
-            // This callback is called when the story completes
-            _moveToNextStory();
-          },
           
+          onComplete: () {
+            _moveToNextStory(); // Move to the next story when the current one completes
+          },
         ),
-        // User info header
+        
         Positioned(
           top: 40,
           left: 10,
@@ -112,8 +151,9 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
                       decoration: TextDecoration.none,
                     ),
                   ),
+                  // Display the correct time for the current story
                   Text(
-                    formatStoryTime(widget.stories.first.createdAt),
+                    formatStoryTime(widget.stories[_currentStoryIndex].createdAt),
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 12,
@@ -125,29 +165,86 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
               Spacer(),
               IconButton(
                 onPressed: () {
-                   Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 icon: Icon(Icons.close, color: Colors.white),
+              ),
+              
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                icon: Icon(Icons.more_vert, color: Colors.white),
               ),
             ],
           ),
         ),
+        
+        if (widget.stories[_currentStoryIndex].userId == widget.currentUserId)
+          Positioned(
+            bottom: 30,
+            left: 10,
+            child: Row(
+              children: [
+                Icon(Icons.visibility, color: Colors.white),
+                SizedBox(width: 5),
+                Text(
+                  '${widget.stories[_currentStoryIndex].views.length}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ],
+            ),
+          ),
+     if (widget.stories[_currentStoryIndex].userId != widget.currentUserId)
+          Positioned(
+            bottom: 30,
+            right: 10,
+            child: Row(
+              children: [
+                
+                Text(
+                  '${widget.stories[_currentStoryIndex].likes.length}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+                 SizedBox(width: 3),
+                IconButton(
+                  icon: Icon(
+                    _isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: Colors.white,
+                    
+                  ),
+                  onPressed: () {
+                    _onLikeStory();
+                  },
+                ), 
+               
+              ],
+            ),
+          ),
+
       ],
     );
   }
 }
 
+
 String formatStoryTime(DateTime createdAt) {
-  if (createdAt == null) return 'Just now'; 
   final difference = DateTime.now().difference(createdAt);
-   if (difference.inSeconds < 60) {
-    return '${difference.inSeconds}s ago';
-  }
-  if (difference.inMinutes < 60) {
-    return '${difference.inMinutes}min ago';
+  if (difference.inSeconds < 60) {
+    return '${difference.inSeconds} s ago';
+  } else if (difference.inMinutes < 60) {
+    return '${difference.inMinutes} min ago';
   } else if (difference.inHours < 24) {
-    return '${difference.inHours}h ago';
+    return '${difference.inHours} h ago';
   } else {
-    return '${difference.inDays}day ago';
+    return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
   }
 }
