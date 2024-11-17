@@ -1,13 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tadaa/features/profile_page/presentation/blocs/profile_bloc.dart';
-import 'package:tadaa/features/profile_page/presentation/blocs/profile_event.dart';
 import 'package:tadaa/features/wallet_page/data/model/walletModel.dart';
 
 class WalletRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   //  add points
   Future<void> addPoints(String userId, int points, String actionType, String actionId) async {
     DocumentReference userRef = _firestore.collection('users').doc(userId);
@@ -16,7 +11,7 @@ class WalletRepository {
     if (userDoc.exists) {
       int currentPoints = userDoc['points'];
       int newPoints = currentPoints + points;
-      
+
       await userRef.update({'points': newPoints});
       // Log the transaction in the wallets collection
       WalletModel wallet = WalletModel(
@@ -56,7 +51,6 @@ class WalletRepository {
       }
     }
   }
-
  
 Future<void> transferPoints(String fromUserId, List<String> toUserIds, int points, String actionId) async {
   // Deduct points from the user who is creating the appreciation post

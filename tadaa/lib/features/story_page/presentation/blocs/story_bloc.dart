@@ -73,6 +73,7 @@ class StoryBloc extends Bloc<StoryEvent, StoryState> {
 
         // Emit success state after liking the story
         emit(StoryLiked(storyId: event.storyId));
+        emit(StoryLoaded(stories: await storyRepository.fetchAllStories()));
       } catch (e) {
         // Emit error state if something goes wrong
         emit(StoryError(error: e.toString()));

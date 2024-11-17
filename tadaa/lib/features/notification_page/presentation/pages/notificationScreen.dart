@@ -22,6 +22,12 @@ class NotificationPage extends StatelessWidget {
           if (state is NotificationLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is NotificationsLoaded) {
+            if (state.notifications.isEmpty) {
+              return const Center(
+                child: 
+                Text('No notifications yet.',
+                style: TextStyle(fontWeight: FontWeight.bold),));
+            }
             return ListView.builder(
               itemCount: state.notifications.length,
               itemBuilder: (context, index) {

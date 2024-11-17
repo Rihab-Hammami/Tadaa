@@ -32,7 +32,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
       if (state is UsersLoaded) {
         setState(() {
           users = state.users; // Store the fetched users
-        });
+        }
+        );
       }
     });
   }
@@ -78,7 +79,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
             ),
             UserCardWidget(
               users: users
-                  .where((user) => user.name.contains(searchQuery) || user.position!.contains(searchQuery))
+                  .where((user) => user.name.contains(searchQuery) || (user.position?.contains(searchQuery) ?? false))
                   .toList(), 
             ),
           ],

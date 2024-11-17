@@ -45,6 +45,7 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
     );
 
     _initiateStoryView(widget.stories[_currentStoryIndex]);
+    _checkIfLiked();
   }
 
   @override
@@ -67,12 +68,15 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
   }
 
  
-  
+  void _checkIfLiked() {
+    // Get the current story and check if it is liked
+    final story = widget.stories[_currentStoryIndex];
+    _isLiked = story.likes.contains(widget.currentUserId); // Assuming `likes` is a list of user IDs
+  }
    void _onLikeStory() {
     setState(() {
       _isLiked = !_isLiked; // Toggle the local like state
     });
-
     // Dispatch the like event to the Bloc
     BlocProvider.of<StoryBloc>(context).add(
       LikeStoryEvent(
@@ -80,6 +84,8 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
         userId: widget.currentUserId,
       ),
     );
+      BlocProvider.of<StoryBloc>(context).add(FetchAllStoriesEvent());
+
   }
    Future<void> _initiateStoryView(StoryModel story) async {
     try {
@@ -102,7 +108,12 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
                 controller: _storyController,
                 caption: Text(
                   story.caption ?? '',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color: Colors.white,
+                    decoration: TextDecoration.none,
+                    fontSize: 20
+                    ),
+                  textAlign: TextAlign.center,                
                 ),
               );
             } else {
@@ -111,7 +122,11 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
                 controller: _storyController,
                 caption: Text(
                   story.caption ?? '',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(
+                  color: Colors.white,
+                  decoration: TextDecoration.none,
+                  fontSize: 20),
+                  textAlign: TextAlign.center
                 ),
               );
             }
@@ -135,9 +150,13 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
           child: Row(
             children: [
               CircleAvatar(
-                backgroundImage: NetworkImage(widget.userProfilePicture),
-                radius: 20,
-              ),
+  backgroundImage: (widget.userProfilePicture != null && widget.userProfilePicture.isNotEmpty)
+      ? NetworkImage(widget.userProfilePicture) 
+      : AssetImage('assets/images/profile.jpg') as ImageProvider,
+  radius: 20,
+),
+
+
               const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,7 +225,7 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
             child: Row(
               children: [
                 
-                Text(
+                /*Text(
                   '${widget.stories[_currentStoryIndex].likes.length}',
                   style: TextStyle(
                     color: Colors.white,
@@ -214,7 +233,7 @@ class _StoryItemWidgetState extends State<StoryItemWidget> {
                     decoration: TextDecoration.none,
                   ),
                 ),
-                 SizedBox(width: 3),
+                 SizedBox(width: 3),*/
                 IconButton(
                   icon: Icon(
                     _isLiked ? Icons.favorite : Icons.favorite_border,

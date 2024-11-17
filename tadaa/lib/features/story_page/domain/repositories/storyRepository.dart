@@ -184,7 +184,8 @@ class StoryRepository {
         if (!currentLikes.contains(userId)) {
           // Add the user ID to the likes list
           currentLikes.add(userId);
-
+          await _walletRepository.addPoints(userId, 2, 'like Story', storyId);     
+          _profileBloc.add(FetchProfile(userId));    
           // Update the story document with the new likes list
           transaction.update(storyDocRef, {'likes': currentLikes});
         } else {

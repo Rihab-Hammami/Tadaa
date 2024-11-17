@@ -59,6 +59,7 @@ class WalletCard extends StatelessWidget {
         wallet.actionType == 'Create Post' || 
         wallet.actionType == 'Comment Post'|| 
         wallet.actionType == 'Create Story'|| 
+        wallet.actionType == 'like Story'|| 
         wallet.actionType == 'Appreciation Post Received') ? '+' : ''}${wallet.nbPoints} Points', 
         style: TextStyle(
           fontSize: 14,
@@ -68,6 +69,7 @@ class WalletCard extends StatelessWidget {
                   wallet.actionType == 'Create Post' || 
                   wallet.actionType == 'Comment Post'|| 
                   wallet.actionType == 'Create Story'|| 
+                  wallet.actionType == 'like Story'|| 
                   wallet.actionType == 'Appreciation Post Received'|| 
                   wallet.actionType == 'like Comment'
                   )

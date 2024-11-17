@@ -104,7 +104,7 @@ Future<void> _fetchAllStories() async {
           currentUserId: widget.currentUserId, // Pass the logged-in user's ID here
           onClose: _moveToNextUser,
           userName: user.name,
-          userProfilePicture: user.profilePicture!,
+          userProfilePicture: user.profilePicture ?? 'assets/images/profile.jpg',
         ),
       ),
     ).then((_) {

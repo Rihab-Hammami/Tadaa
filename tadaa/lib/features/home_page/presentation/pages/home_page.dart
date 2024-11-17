@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:tadaa/features/addPost_page/domain/repositories/post_repository.dart';
@@ -75,10 +74,15 @@ class _HomePageState extends State<HomePage> {
     _fetchPosts();
     _fetchProfile();
   }
-void _fetchStories() {
+  Future<void> _fetchStories() async {
   final storyBloc = BlocProvider.of<StoryBloc>(context);
   storyBloc.add(FetchAllStoriesEvent());
 }
+
+/*void _fetchStories() {
+  final storyBloc = BlocProvider.of<StoryBloc>(context);
+  storyBloc.add(FetchAllStoriesEvent());
+}*/
 /*void _fetchStories() {
   final storyRepository = StoryRepository();
   storyRepository.fetchAllStories().then((fetchedStories) {
@@ -90,10 +94,15 @@ void _fetchStories() {
     print("Failed to fetch stories: $error");
   });
 }*/
- void _fetchPosts() {
+ /*void _fetchPosts() {
+  final postBloc = BlocProvider.of<PostBloc>(context);
+  postBloc.add(FetchAllPostsEvent());
+}*/
+Future<void> _fetchPosts() async {
   final postBloc = BlocProvider.of<PostBloc>(context);
   postBloc.add(FetchAllPostsEvent());
 }
+
 
   Future<void> _getUserId() async {
     final prefs = await SharedPreferences.getInstance();
@@ -103,12 +112,23 @@ void _fetchStories() {
       _fetchProfile(); 
     }
   }
+Future<void> _fetchProfile() async {
+  if (_userId == null) return;
+  final profileBloc = BlocProvider.of<ProfileBloc>(context);
+  profileBloc.add(FetchProfile(_userId!)); 
+}
 
-  void _fetchProfile() {
+  /*void _fetchProfile() {
     if (_userId == null) 
     return;
     final profileBloc = BlocProvider.of<ProfileBloc>(context);
     profileBloc.add(FetchProfile(_userId!)); 
+  }*/
+   Future<void> _onRefresh() async {
+    // Trigger the actions to refresh the data.
+    await _fetchStories();
+    await _fetchPosts();
+    await _fetchProfile();
   }
 
   @override
@@ -265,96 +285,99 @@ void _fetchStories() {
             if (postState is PostLoading) {
               return Center(child: CircularProgressIndicator());
             } else if (postState is PostFetchSuccess) {
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 6.0),
-                          child: Text(
-                            "Stories",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+              return RefreshIndicator(
+                onRefresh: _onRefresh,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 6.0),
+                            child: Text(
+                              "Stories",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 8),
-                     BlocBuilder<StoryBloc, StoryState>(
-                        builder: (context, storyState) {
-                          if (storyState is StoryLoading) {
-                            return Center(child: CircularProgressIndicator());
-                          } else if (storyState is StoryLoaded) {
-                            return Row(
-                              children: [
-                                _buildAddContainer(),
-                                SizedBox(width: 5),
-                                Expanded(
-                                  child: storyState.stories.isNotEmpty
-                                      ? BuildStory(
-                                        stories: storyState.stories,
-                                        currentUserId: _userId!,
-                                      )
-                                      : Center(child: Text('No stories available')),
-                                ),
-                              ],
-                            );
-                          } else if (storyState is StoryError) {
-                            return Center(child: Text('Failed to load stories'));
-                          } else {
-                            return Center(child: Text('No stories available'));
-                          }
-                        },
-                      ),
-                  
-                      SizedBox(height: 10),
-                      
-                  ListView.separated(
-                  shrinkWrap: true, // Adjust based on your requirements
-                  physics: NeverScrollableScrollPhysics(), // Use this if the parent is already scrollable
-                  itemCount: postState.posts.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 16), // Adds separation between posts
-                  itemBuilder: (context, index) {
-                    final post =postState.posts[index];
-                    if (post.type == 'simple') {
-                      return SimplePostWidget(
-                        post: post,
-                        profileRepository: profileRepository,
-                        postRepository: postRepository,
-                        currentUserId: _userId!,
-                      );
-                    } else if (post.type == 'celebration') {
-                      CelebrationCategory category = CelebrationCategory(
-                      title: post.eventName ?? 'Unknown Event',   // or wherever the title is stored
-                      imagePath: post.image ?? '',    
-                      iconAssetPath: '', 
-                      text: post.content ?? 'No content available', // or wherever the image path is stored
-                    );
-                      return CelebrationPostWidget(
-                        post: post,
-                        profileRepository: profileRepository,
-                        postRepository: postRepository,
-                        currentUserId: _userId!,
-                        category: category
-                      );
-                      }else if (post.type == 'appreciation') {
-                      return AppreciationPostWidget(
-                        post: post,
-                        profileRepository: profileRepository,
-                        postRepository: postRepository,
-                        currentUserId: _userId!,
-                      );
-                      }else {
-                      return const SizedBox.shrink(); // Fallback for unknown types
-                    }
+                        SizedBox(height: 8),
+                       BlocBuilder<StoryBloc, StoryState>(
+                          builder: (context, storyState) {
+                            if (storyState is StoryLoading) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (storyState is StoryLoaded) {
+                              return Row(
+                                children: [
+                                  _buildAddContainer(),
+                                  SizedBox(width: 5),
+                                  Expanded(
+                                    child: storyState.stories.isNotEmpty
+                                        ? BuildStory(
+                                          stories: storyState.stories,
+                                          currentUserId: _userId!,
+                                        )
+                                        : Center(child: Text('No stories available')),
+                                  ),
+                                ],
+                              );
+                            } else if (storyState is StoryError) {
+                              return Center(child: Text('Failed to load stories'));
+                            } else {
+                              return Center(child: Text('No stories available'));
+                            }
+                          },
+                        ),
                     
-                  },
-                ),                  
-                  ]),
+                        SizedBox(height: 10),
+                        
+                    ListView.separated(
+                    shrinkWrap: true, // Adjust based on your requirements
+                    physics: NeverScrollableScrollPhysics(), // Use this if the parent is already scrollable
+                    itemCount: postState.posts.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 16), // Adds separation between posts
+                    itemBuilder: (context, index) {
+                      final post =postState.posts[index];
+                      if (post.type == 'simple') {
+                        return SimplePostWidget(
+                          post: post,
+                          profileRepository: profileRepository,
+                          postRepository: postRepository,
+                          currentUserId: _userId!,
+                        );
+                      } else if (post.type == 'celebration') {
+                        CelebrationCategory category = CelebrationCategory(
+                        title: post.eventName ?? 'Unknown Event',   // or wherever the title is stored
+                        imagePath: post.image ?? '',    
+                        iconAssetPath: '', 
+                        text: post.content ?? 'No content available', // or wherever the image path is stored
+                      );
+                        return CelebrationPostWidget(
+                          post: post,
+                          profileRepository: profileRepository,
+                          postRepository: postRepository,
+                          currentUserId: _userId!,
+                          category: category
+                        );
+                        }else if (post.type == 'appreciation') {
+                        return AppreciationPostWidget(
+                          post: post,
+                          profileRepository: profileRepository,
+                          postRepository: postRepository,
+                          currentUserId: _userId!,
+                        );
+                        }else {
+                        return const SizedBox.shrink(); // Fallback for unknown types
+                      }
+                      
+                    },
+                  ),                  
+                    ]),
+                  ),
                 ),
               );
             } else {

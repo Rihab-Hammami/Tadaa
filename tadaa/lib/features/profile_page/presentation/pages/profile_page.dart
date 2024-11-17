@@ -240,6 +240,7 @@ else {
             child: TabBarView(
               controller: tabController,
               children: [
+                /////////////about/////////
                 AboutWidget(
                   bio: user.aboutMe ?? 'No bio available',
                   position: user.position ?? '',
@@ -254,13 +255,14 @@ else {
                     context.read<ProfileBloc>().add(UpdatePosition(newPosition));
                   },
                 ),
+                ///////////////timeline///////
                 TimelineWidget(
                 userId: userId!, 
                 profileRepository: profileRepository, 
                 postRepository: postRepository,
                 currentUserId: userId!,
               ),
-                // Center(child: Text('Rewards View Placeholder')),
+               ///////////reward///////////
                 RewardsWidget(),
                 
               ],
